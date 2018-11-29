@@ -1,0 +1,115 @@
+---
+title: "Moisture Analysis"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+```{r, setup}
+library(psych)
+
+# library
+library(ggplot2)
+library(tidyverse)
+library(data.table)
+library(GGally)
+library(lubridate)
+```
+```{r, xlsload_iso}
+library(readxl)
+Isosuo_1 <- read_excel("Data/Isosuo 11.7.-3.8_.xlsx")
+names(Isosuo_1) <- make.names(names(Isosuo_1))
+data_isosuo_weather <- Isosuo_1 %>%
+  rename("temp"=Temperature..C.) %>%
+  rename("humid"=Humidity....)  %>%
+  rename("timestamp"= Date.Time.Y.m.d.H.M.S.EEST..) %>% 
+  mutate("timestamp"= ymd_hms(timestamp))
+
+# setDT(myData)
+# setDT(myData)[Isosuo_1, ch1, roll = "nearest", on = "timestamp"]
+
+```
+
+
+```{r, load_moisture_data}
+data_moisture <- read.csv("./Data/AA2_data.csv", sep = ";") %>% 
+  rename(moisture1 = "ch1") %>% 
+  rename(moisture2 = "Ch2") %>% 
+  rename(moisture3 = "Ch3") %>% 
+  mutate("timestamp"= ymd_hms(timestamp))
+# testData <- myData[1:100, ]
+```
+
+```{r, load_ground_level_data}
+data_ground_level_1 <- read.csv("./Data/AA_2_1.csv", sep = ";") %>% 
+  select("X", "X.1") %>% 
+  rename(timestamp = X) %>%
+  rename(water_height1 = X.1) %>%
+  slice(12:n())
+
+data_ground_level_2 <- read.csv("./Data/AA_2_2.csv", sep = ";") %>% 
+  select("X", "X.1") %>% 
+  rename(timestamp = X) %>%
+  rename(water_height2 = X.1) %>%
+  slice(12:n())
+
+data_ground_level_3 <- read.csv("./Data/AA_2_3.csv", sep = ";") %>% 
+  select("X", "X.1") %>% 
+  rename(timestamp = X) %>%
+  rename(water_height3 = X.1) %>%
+  slice(12:n()) 
+
+# TO DO: convert to timestamp
+  #mutate(timestamp = as.time)
+
+summary(data_ground_level_3)
+data_ground_level <- inner_join(data_ground_level_1, data_ground_level_2, by="timestamp")
+data_ground_level <- inner_join(data_ground_level, data_ground_level_3, by="timestamp")
+  # TODO: convert to timestamp
+  #mutate("timestamp"= str_replace(., ".", "-"))
+
+#TODO check the join is correct. What happened to missing measurements. Why there is more data
+```
+```{r combine_data}
+data_combined <- inner_join(data_isosuo_weather, data_moisture, by="timestamp")
+```
+
+
+
+# Overview of Data
+```{r, exploreData}
+head(data_combined)
+describe(data_combined)
+```
+# Plots
+## Histogram
+```{r, histogram}
+# Basic histogram
+ggplot(data_combined, aes(x=moisture1)) + geom_histogram(binwidth = 0.005)
+ggplot(data_combined, aes(x=moisture2)) + geom_histogram()
+
+
+# Custom Binning. I can just give the size of the bin
+ggplot(data_combined, aes(x=moisture3)) + geom_histogram(binwidth = 0.00001)
+
+
+```
+## Scatterplots
+```{r, scatterplots}
+# basic scatterplot
+ggplot(data_combined, aes(x=timestamp, y=moisture3)) + 
+  geom_point()
+```
+
+```{r, plotXls_iso}
+# Custom Binning. I can just give the size of the bin
+ggplot(data_combined, aes(x=temp)) + geom_histogram(binwidth = 0.05)
+
+
+```
+
+```{r, plotPairs}
+ggpairs(data_combined, columns=c("temp", "Wind.gust..m.s.", "humid", "moisture1", "moisture2", "moisture3"))
+```
+
