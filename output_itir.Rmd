@@ -18,7 +18,7 @@ library(lubridate)
 ```
 ```{r, xlsload_iso}
 library(readxl)
-Isosuo_1 <- read_excel("Data/Isosuo 11.7.-3.8_.xlsx")
+Isosuo_1 <- read_excel("../Data/Isosuo 11.7.-3.8_.xlsx")
 names(Isosuo_1) <- make.names(names(Isosuo_1))
 data_isosuo_weather <- Isosuo_1 %>%
   rename("temp"=Temperature..C.) %>%
