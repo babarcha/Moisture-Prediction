@@ -94,14 +94,10 @@ data_ground_level <- inner_join(data_ground_level, data_ground_level_3, by="time
 
 library(data.table) # v1.9.6+
 
-setDT(data_isosuo_weather)[, water_height1 := setDT(data_ground_level)[data_isosuo_weather, water_height1, on = "timestamp", roll = "nearest"]]
-setDT(data_isosuo_weather)[, water_height2 := setDT(data_ground_level)[data_isosuo_weather, water_height2, on = "timestamp", roll = "nearest"]]
 
+setDT(data_moisture)[, temp := setDT(data_isosuo_weather)[data_moisture, temp, on = "timestamp", roll = "nearest"]]
 
-
-setDT(data_ground_level)[data_isosuo_weather, timestamp, roll = "nearest", on = "timestamp"]
-
-data_combined <- inner_join(data_isosuo_weather, data_moisture, by="timestamp")
+setDT(data_moisture)[, water_height1 := setDT(data_ground_level)[data_moisture, water_height1, on = "timestamp", roll = "nearest"]]
 
 ```
 
