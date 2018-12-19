@@ -1,9 +1,10 @@
-library(readxl)
+require(readxl)
+require(lubridate)
 
 Isosuo_1 <- read_excel("../Data/Isosuo 11.7.-3.8_.xlsx")
 names(Isosuo_1) <- make.names(names(Isosuo_1))
 data_isosuo_weather_1 <- Isosuo_1 %>%
-  rename("temp"=Temperature) %>%
+  rename("temp"=`Temperature..C.`) %>%
   rename("humid"=Humidity....)  %>%
   rename("timestamp"= Date.Time.Y.m.d.H.M.S.EEST..) %>% 
   mutate("timestamp"= ymd_hms(timestamp))
@@ -11,7 +12,7 @@ data_isosuo_weather_1 <- Isosuo_1 %>%
 Isosuo_2 <- read_excel("../Data/Isosuo 22.8.-26.9_.xlsx")
 names(Isosuo_2) <- make.names(names(Isosuo_2))
 data_isosuo_weather_2 <- Isosuo_2 %>%
-  rename("temp"=Temperature) %>%
+  rename("temp"=`Temperature..C.`) %>%
   rename("humid"=Humidity....)  %>%
   rename("timestamp"= Date.Time.Y.m.d.H.M.S.EEST..) %>% 
   mutate("timestamp"= ymd_hms(timestamp))
