@@ -189,38 +189,50 @@ library(GGally)
 library(lubridate)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShyZWFkeGwpXG5Jc29zdW9fMSA8LSByZWFkX2V4Y2VsKFwiLi4vRGF0YS9Jc29zdW8gMTEuNy4tMy44Xy54bHN4XCIpXG5uYW1lcyhJc29zdW9fMSkgPC0gbWFrZS5uYW1lcyhuYW1lcyhJc29zdW9fMSkpXG5kYXRhX2lzb3N1b193ZWF0aGVyIDwtIElzb3N1b18xICU+JVxuICByZW5hbWUoXCJ0ZW1wXCI9VGVtcGVyYXR1cmUuLkMuKSAlPiVcbiAgcmVuYW1lKFwiaHVtaWRcIj1IdW1pZGl0eS4uLi4pICAlPiVcbiAgcmVuYW1lKFwidGltZXN0YW1wXCI9IERhdGUuVGltZS5ZLm0uZC5ILk0uUy5FRVNULi4pICU+JSBcbiAgbXV0YXRlKFwidGltZXN0YW1wXCI9IHltZF9obXModGltZXN0YW1wKSlcblxuIyBzZXREVChteURhdGEpXG4jIHNldERUKG15RGF0YSlbSXNvc3VvXzEsIGNoMSwgcm9sbCA9IFwibmVhcmVzdFwiLCBvbiA9IFwidGltZXN0YW1wXCJdXG5cbmBgYCJ9 -->
-<pre class="r"><code>library(readxl)
-Isosuo_1 &lt;- read_excel(&quot;../Data/Isosuo 11.7.-3.8_.xlsx&quot;)
-names(Isosuo_1) &lt;- make.names(names(Isosuo_1))
-data_isosuo_weather &lt;- Isosuo_1 %&gt;%
-  rename(&quot;temp&quot;=Temperature..C.) %&gt;%
-  rename(&quot;humid&quot;=Humidity....)  %&gt;%
-  rename(&quot;timestamp&quot;= Date.Time.Y.m.d.H.M.S.EEST..) %&gt;% 
-  mutate(&quot;timestamp&quot;= ymd_hms(timestamp))
-
-# setDT(myData)
-# setDT(myData)[Isosuo_1, ch1, roll = &quot;nearest&quot;, on = &quot;timestamp&quot;]
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YV9tb2lzdHVyZSA8LSByZWFkLmNzdihcIi4uL0RhdGEvQUEyX2RhdGEuY3N2XCIsIHNlcCA9IFwiO1wiKSAlPiUgXG4gIHJlbmFtZShtb2lzdHVyZTEgPSBcImNoMVwiKSAlPiUgXG4gIHJlbmFtZShtb2lzdHVyZTIgPSBcIkNoMlwiKSAlPiUgXG4gIHJlbmFtZShtb2lzdHVyZTMgPSBcIkNoM1wiKSAlPiUgXG4gIG11dGF0ZShcInRpbWVzdGFtcFwiPSB5bWRfaG1zKHRpbWVzdGFtcCkpXG4jIHRlc3REYXRhIDwtIG15RGF0YVsxOjEwMCwgXVxuYGBgIn0= -->
-<pre class="r"><code>data_moisture &lt;- read.csv(&quot;../Data/AA2_data.csv&quot;, sep = &quot;;&quot;) %&gt;% 
-  rename(moisture1 = &quot;ch1&quot;) %&gt;% 
-  rename(moisture2 = &quot;Ch2&quot;) %&gt;% 
-  rename(moisture3 = &quot;Ch3&quot;) %&gt;% 
-  mutate(&quot;timestamp&quot;= ymd_hms(timestamp))
-# testData &lt;- myData[1:100, ]</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShwc3ljaClcbiMgbGlicmFyeVxubGlicmFyeShnZ3Bsb3QyKVxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGRhdGEudGFibGUpXG5saWJyYXJ5KEdHYWxseSlcbmxpYnJhcnkobHVicmlkYXRlKVxuYGBgIn0= -->
+<pre class="r"><code>library(psych)
+# library
+library(ggplot2)
+library(tidyverse)
+library(data.table)
+library(GGally)
+library(lubridate)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<div id="load-weather-data-from-isosuo-22.8-26.09-load-moisture-data-from-isosuo-20.7-10.09" class="section level1">
+<h1>Load weather data from Isosuo 22.8-26.09 &amp; Load moisture data from Isosuo 20.7-10.09</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YV9ncm91bmRfbGV2ZWxfMSA8LSByZWFkLmNzdihcIi4uL0RhdGEvQUFfMl8xLmNzdlwiLCBzZXAgPSBcIjtcIikgJT4lIFxuICBzbGljZSgxMjpuKCkpICU+JSBcbiAgc2VsZWN0KFwiWFwiLCBcIlguMVwiKSAlPiUgXG4gIHJlbmFtZSh0aW1lc3RhbXAgPSBYKSAlPiVcbiAgcmVuYW1lKHdhdGVyX2hlaWdodDEgPSBYLjEpICU+JVxuICBtdXRhdGUod2F0ZXJfaGVpZ2h0MSA9IGFzLm51bWVyaWMod2F0ZXJfaGVpZ2h0MSkpICU+JSBcbiAgbXV0YXRlKHRpbWVzdGFtcD0gZ3N1YihcIlsuXVwiLCBcIi1cIiwgdGltZXN0YW1wKSkgJT4lIFxuICBtdXRhdGUodGltZXN0YW1wPSBkbXlfaG1zKHRpbWVzdGFtcCkpICU+JSBcbiAgZmlsdGVyKCFpcy5uYSh0aW1lc3RhbXApKVxuXG5zdHIoZGF0YV9ncm91bmRfbGV2ZWxfMSR3YXRlcl9oZWlnaHQxKVxuXG5zdW0oZHVwbGljYXRlZChkYXRhX2dyb3VuZF9sZXZlbF8xJHRpbWVzdGFtcCkpXG5cbnRhaWwoZGF0YV9ncm91bmRfbGV2ZWxfMSlcblxuYSA8LSBkYXRhX2dyb3VuZF9sZXZlbF8xW2R1cGxpY2F0ZWQoZGF0YV9ncm91bmRfbGV2ZWxfMSR0aW1lc3RhbXApLCBdXG5cbmRhdGFfZ3JvdW5kX2xldmVsXzIgPC0gcmVhZC5jc3YoXCIuLi9EYXRhL0FBXzJfMi5jc3ZcIiwgc2VwID0gXCI7XCIpICU+JSBcbiAgc2xpY2UoMTI6bigpKSAlPiUgXG4gIHNlbGVjdChcIlhcIiwgXCJYLjFcIikgJT4lIFxuICByZW5hbWUodGltZXN0YW1wID0gWCkgJT4lXG4gIHJlbmFtZSh3YXRlcl9oZWlnaHQyID0gWC4xKSAlPiVcbiAgbXV0YXRlKHdhdGVyX2hlaWdodDIgPSBhcy5udW1lcmljKHdhdGVyX2hlaWdodDIpKSAlPiUgXG4gIG11dGF0ZSh0aW1lc3RhbXA9IGdzdWIoXCJbLl1cIiwgXCItXCIsIHRpbWVzdGFtcCkpICU+JSBcbiAgbXV0YXRlKHRpbWVzdGFtcD0gZG15X2htcyh0aW1lc3RhbXApKSAlPiUgXG4gIGZpbHRlcighaXMubmEodGltZXN0YW1wKSlcblxuZGF0YV9ncm91bmRfbGV2ZWxfMyA8LSByZWFkLmNzdihcIi4uL0RhdGEvQUFfMl8zLmNzdlwiLCBzZXAgPSBcIjtcIikgJT4lIFxuICBzbGljZSgxMjpuKCkpICU+JSBcbiAgc2VsZWN0KFwiWFwiLCBcIlguMVwiKSAlPiUgXG4gIHJlbmFtZSh0aW1lc3RhbXAgPSBYKSAlPiVcbiAgcmVuYW1lKHdhdGVyX2hlaWdodDMgPSBYLjEpICU+JVxuICBtdXRhdGUod2F0ZXJfaGVpZ2h0MyA9IGFzLm51bWVyaWMod2F0ZXJfaGVpZ2h0MykpICU+JSBcbiAgbXV0YXRlKHRpbWVzdGFtcD0gZ3N1YihcIlsuXVwiLCBcIi1cIiwgdGltZXN0YW1wKSkgJT4lIFxuICBtdXRhdGUodGltZXN0YW1wPSBkbXlfaG1zKHRpbWVzdGFtcCkpICU+JSBcbiAgZmlsdGVyKCFpcy5uYSh0aW1lc3RhbXApKVxuXG5cbiMgVE8gRE86IGNvbnZlcnQgdG8gdGltZXN0YW1wXG4gICNtdXRhdGUodGltZXN0YW1wID0gYXMudGltZSlcblxuc3VtbWFyeShkYXRhX2dyb3VuZF9sZXZlbF8zKVxuZGF0YV9ncm91bmRfbGV2ZWwgPC0gaW5uZXJfam9pbihkYXRhX2dyb3VuZF9sZXZlbF8xLCBkYXRhX2dyb3VuZF9sZXZlbF8yLCBieT1cInRpbWVzdGFtcFwiKVxuZGF0YV9ncm91bmRfbGV2ZWwgPC0gaW5uZXJfam9pbihkYXRhX2dyb3VuZF9sZXZlbCwgZGF0YV9ncm91bmRfbGV2ZWxfMywgYnk9XCJ0aW1lc3RhbXBcIilcblxuI1RPRE8gY2hlY2sgdGhlIGpvaW4gaXMgY29ycmVjdC4gV2hhdCBoYXBwZW5lZCB0byBtaXNzaW5nIG1lYXN1cmVtZW50cy4gV2h5IHRoZXJlIGlzIG1vcmUgZGF0YVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBJZiB4bHMgZmlsZXMgY2hhbmdlIHRoZW4gcnVuIFxuIyBzb3VyY2UoJ34vRG9jdW1lbnRzL0dpdEh1Yi9Nb2lzdHVyZS1QcmVkaWN0aW9uL3JlYWRfd2VhdGhlcl9zdGF0aW9uLlInKVxubG9hZChcIi4uL0RhdGEvSXNvc3VvLlJcIilcbmxvYWQoXCIuLi9EYXRhL0hpcnNpa29ycGkuUlwiKVxuI3Bvb2xlZF9kYXRhIDwtIHJiaW5kKElzb3N1bywgSGlyc2lrb3JwaSlcbmRhdGFfaXNvc3VvX3dlYXRoZXIgPC0gSXNvc3VvXG5gYGAifQ== -->
+<pre class="r"><code># If xls files change then run 
+# source('~/Documents/GitHub/Moisture-Prediction/read_weather_station.R')
+load(&quot;../Data/Isosuo.R&quot;)
+load(&quot;../Data/Hirsikorpi.R&quot;)
+#pooled_data &lt;- rbind(Isosuo, Hirsikorpi)
+data_isosuo_weather &lt;- Isosuo</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="load-data_moisture-20.07-10.09" class="section level1">
+<h1>Load data_moisture 20.07-10.09</h1>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG9hZChcIi4uL0RhdGEvZGF0YV9tb2lzdHVyZS5SXCIpXG5gYGAifQ== -->
+<pre class="r"><code>load(&quot;../Data/data_moisture.R&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="load-ground-water-level-data-from-isosuo-27.06-01.10" class="section level1">
+<h1>Load ground water level data from Isosuo 27.06-01.10</h1>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YV9ncm91bmRfbGV2ZWxfMSA8LSByZWFkLmNzdihcIi4uL0RhdGEvQUFfMl8xLmNzdlwiLCBzZXAgPSBcIjtcIikgJT4lIFxuICBzbGljZSgxMjpuKCkpICU+JSBcbiAgc2VsZWN0KFwiWFwiLCBcIlguMVwiKSAlPiUgXG4gIHJlbmFtZSh0aW1lc3RhbXAgPSBYKSAlPiVcbiAgcmVuYW1lKHdhdGVyX2hlaWdodDEgPSBYLjEpICU+JVxuICBtdXRhdGUod2F0ZXJfaGVpZ2h0MSA9IGFzLm51bWVyaWMod2F0ZXJfaGVpZ2h0MSkpICU+JSBcbiAgbXV0YXRlKHRpbWVzdGFtcD0gZ3N1YihcIlsuXVwiLCBcIi1cIiwgdGltZXN0YW1wKSkgJT4lIFxuICBtdXRhdGUodGltZXN0YW1wID0gZG15X2htcyh0aW1lc3RhbXApKSAlPiUgXG4gIGZpbHRlcighaXMubmEodGltZXN0YW1wKSlcblxuc3RyKGRhdGFfZ3JvdW5kX2xldmVsXzEkd2F0ZXJfaGVpZ2h0MSlcblxuc3VtKGR1cGxpY2F0ZWQoZGF0YV9ncm91bmRfbGV2ZWxfMSR0aW1lc3RhbXApKVxuXG50YWlsKGRhdGFfZ3JvdW5kX2xldmVsXzEpXG5cbmEgPC0gZGF0YV9ncm91bmRfbGV2ZWxfMVtkdXBsaWNhdGVkKGRhdGFfZ3JvdW5kX2xldmVsXzEkdGltZXN0YW1wKSwgXVxuXG5kYXRhX2dyb3VuZF9sZXZlbF8yIDwtIHJlYWQuY3N2KFwiLi4vRGF0YS9BQV8yXzIuY3N2XCIsIHNlcCA9IFwiO1wiKSAlPiUgXG4gIHNsaWNlKDEyOm4oKSkgJT4lIFxuICBzZWxlY3QoXCJYXCIsIFwiWC4xXCIpICU+JSBcbiAgcmVuYW1lKHRpbWVzdGFtcCA9IFgpICU+JVxuICByZW5hbWUod2F0ZXJfaGVpZ2h0MiA9IFguMSkgJT4lXG4gIG11dGF0ZSh3YXRlcl9oZWlnaHQyID0gYXMubnVtZXJpYyh3YXRlcl9oZWlnaHQyKSkgJT4lIFxuICBtdXRhdGUodGltZXN0YW1wPSBnc3ViKFwiWy5dXCIsIFwiLVwiLCB0aW1lc3RhbXApKSAlPiUgXG4gIG11dGF0ZSh0aW1lc3RhbXA9IGRteV9obXModGltZXN0YW1wKSkgJT4lIFxuICBmaWx0ZXIoIWlzLm5hKHRpbWVzdGFtcCkpXG5cbmRhdGFfZ3JvdW5kX2xldmVsXzMgPC0gcmVhZC5jc3YoXCIuLi9EYXRhL0FBXzJfMy5jc3ZcIiwgc2VwID0gXCI7XCIpICU+JSBcbiAgc2xpY2UoMTI6bigpKSAlPiUgXG4gIHNlbGVjdChcIlhcIiwgXCJYLjFcIikgJT4lIFxuICByZW5hbWUodGltZXN0YW1wID0gWCkgJT4lXG4gIHJlbmFtZSh3YXRlcl9oZWlnaHQzID0gWC4xKSAlPiVcbiAgbXV0YXRlKHdhdGVyX2hlaWdodDMgPSBhcy5udW1lcmljKHdhdGVyX2hlaWdodDMpKSAlPiUgXG4gIG11dGF0ZSh0aW1lc3RhbXA9IGdzdWIoXCJbLl1cIiwgXCItXCIsIHRpbWVzdGFtcCkpICU+JSBcbiAgbXV0YXRlKHRpbWVzdGFtcD0gZG15X2htcyh0aW1lc3RhbXApKSAlPiUgXG4gIGZpbHRlcighaXMubmEodGltZXN0YW1wKSlcblxuXG4jIFRPIERPOiBjb252ZXJ0IHRvIHRpbWVzdGFtcFxuICAjbXV0YXRlKHRpbWVzdGFtcCA9IGFzLnRpbWUpXG5cbnN1bW1hcnkoZGF0YV9ncm91bmRfbGV2ZWxfMylcbmRhdGFfZ3JvdW5kX2xldmVsIDwtIGlubmVyX2pvaW4oZGF0YV9ncm91bmRfbGV2ZWxfMSwgZGF0YV9ncm91bmRfbGV2ZWxfMiwgYnk9XCJ0aW1lc3RhbXBcIilcbmRhdGFfZ3JvdW5kX2xldmVsIDwtIGlubmVyX2pvaW4oZGF0YV9ncm91bmRfbGV2ZWwsIGRhdGFfZ3JvdW5kX2xldmVsXzMsIGJ5PVwidGltZXN0YW1wXCIpXG5kYXRhX2NvbWJpbmVkIDwtIGlubmVyX2pvaW4oZGF0YV9pc29zdW9fd2VhdGhlciwgZGF0YV9tb2lzdHVyZSwgYnk9XCJ0aW1lc3RhbXBcIilcblxuXG4jVE9ETyBjaGVjayB0aGUgam9pbiBpcyBjb3JyZWN0LiBXaGF0IGhhcHBlbmVkIHRvIG1pc3NpbmcgbWVhc3VyZW1lbnRzLiBXaHkgdGhlcmUgaXMgbW9yZSBkYXRhXG5gYGAifQ== -->
 <pre class="r"><code>data_ground_level_1 &lt;- read.csv(&quot;../Data/AA_2_1.csv&quot;, sep = &quot;;&quot;) %&gt;% 
   slice(12:n()) %&gt;% 
   select(&quot;X&quot;, &quot;X.1&quot;) %&gt;% 
@@ -228,7 +240,7 @@ data_isosuo_weather &lt;- Isosuo_1 %&gt;%
   rename(water_height1 = X.1) %&gt;%
   mutate(water_height1 = as.numeric(water_height1)) %&gt;% 
   mutate(timestamp= gsub(&quot;[.]&quot;, &quot;-&quot;, timestamp)) %&gt;% 
-  mutate(timestamp= dmy_hms(timestamp)) %&gt;% 
+  mutate(timestamp = dmy_hms(timestamp)) %&gt;% 
   filter(!is.na(timestamp))
 
 str(data_ground_level_1$water_height1)
@@ -266,21 +278,14 @@ data_ground_level_3 &lt;- read.csv(&quot;../Data/AA_2_3.csv&quot;, sep = &quot;;
 summary(data_ground_level_3)
 data_ground_level &lt;- inner_join(data_ground_level_1, data_ground_level_2, by=&quot;timestamp&quot;)
 data_ground_level &lt;- inner_join(data_ground_level, data_ground_level_3, by=&quot;timestamp&quot;)
+data_combined &lt;- inner_join(data_isosuo_weather, data_moisture, by=&quot;timestamp&quot;)
+
 
 #TODO check the join is correct. What happened to missing measurements. Why there is more data</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0RFQoZGF0YV9ncm91bmRfbGV2ZWwpW2RhdGFfaXNvc3VvX3dlYXRoZXIsIHRpbWVzdGFtcCwgcm9sbCA9IFwibmVhcmVzdFwiLCBvbiA9IFwidGltZXN0YW1wXCJdXG5cbmBgYCJ9 -->
-<pre class="r"><code>setDT(data_ground_level)[data_isosuo_weather, timestamp, roll = &quot;nearest&quot;, on = &quot;timestamp&quot;]
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gYFsuZGF0YS50YWJsZWAoc2V0RFQoZGF0YV9ncm91bmRfbGV2ZWwpLCBkYXRhX2lzb3N1b193ZWF0aGVyLCAgOiBcbiAgbG9naWNhbCBlcnJvci4gaSBpcyBub3QgYSBkYXRhLnRhYmxlLCBidXQgJ29uJyBhcmd1bWVudCBpcyBwcm92aWRlZC5cbiJ9 -->
-<pre><code>Error in `[.data.table`(setDT(data_ground_level), data_isosuo_weather,  : 
-  logical error. i is not a data.table, but 'on' argument is provided.</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
 <div id="overview-of-data" class="section level1">
 <h1>Overview of Data</h1>
 <!-- rnb-text-end -->
@@ -288,6 +293,28 @@ data_ground_level &lt;- inner_join(data_ground_level, data_ground_level_3, by=&q
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGVhZChkYXRhX2NvbWJpbmVkKVxuZGVzY3JpYmUoZGF0YV9jb21iaW5lZClcbmBgYCJ9 -->
 <pre class="r"><code>head(data_combined)
 describe(data_combined)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="overview-of-data-isosuo" class="section level1">
+<h1>Overview of Data isosuo</h1>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGVhZChJc29zdW8pXG5kZXNjcmliZShJc29zdW8pXG5gYGAifQ== -->
+<pre class="r"><code>head(Isosuo)
+describe(Isosuo)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="overview-of-data-hirsikorpi" class="section level1">
+<h1>Overview of Data Hirsikorpi</h1>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGVhZChIaXJzaWtvcnBpKVxuZGVzY3JpYmUoSGlyc2lrb3JwaSlcbmBgYCJ9 -->
+<pre class="r"><code>head(Hirsikorpi)
+describe(Hirsikorpi)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -315,10 +342,10 @@ ggplot(data_combined, aes(x=moisture3)) + geom_histogram(binwidth = 0.00001)
 <h2>Scatterplots</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBiYXNpYyBzY2F0dGVycGxvdFxuZ2dwbG90KGRhdGFfY29tYmluZWQsIGFlcyh4PXRpbWVzdGFtcCwgeT1tb2lzdHVyZTMpKSArIFxuICBnZW9tX3BvaW50KClcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBiYXNpYyBzY2F0dGVycGxvdFxuZ2dwbG90KGRhdGFfY29tYmluZWQsIGFlcyh4PXRpbWVzdGFtcCwgeT1tb2lzdHVyZTMpKSArIFxuZ2VvbV9wb2ludCgpXG5gYGAifQ== -->
 <pre class="r"><code># basic scatterplot
 ggplot(data_combined, aes(x=timestamp, y=moisture3)) + 
-  geom_point()</code></pre>
+geom_point()</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -333,8 +360,194 @@ ggplot(data_combined, aes(x=temp)) + geom_histogram(binwidth = 0.05)
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwYWlycyhkYXRhX2NvbWJpbmVkLCBjb2x1bW5zPWMoXCJ0ZW1wXCIsIFwiV2luZC5ndXN0Li5tLnMuXCIsIFwiaHVtaWRcIiwgXCJtb2lzdHVyZTFcIiwgXCJtb2lzdHVyZTJcIiwgXCJtb2lzdHVyZTNcIikpXG5gYGAifQ== -->
-<pre class="r"><code>ggpairs(data_combined, columns=c(&quot;temp&quot;, &quot;Wind.gust..m.s.&quot;, &quot;humid&quot;, &quot;moisture1&quot;, &quot;moisture2&quot;, &quot;moisture3&quot;))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBsb2FkKGZpbGUgPSBcIi4uL0RhdGEvYWxsX21vaXN0dXJlX2RhdGEuUlwiIClcbmdncGFpcnMoZGF0YV9jb21iaW5lZCwgY29sdW1ucz1jKFwidGVtcFwiLCBcIldpbmQuZ3VzdC4ubS5zLlwiLCBcImh1bWlkXCIsIFwibW9pc3R1cmUxXCIsIFwibW9pc3R1cmUyXCIsIFwibW9pc3R1cmUzXCIpKVxuXG5gYGAifQ== -->
+<pre class="r"><code># load(file = &quot;../Data/all_moisture_data.R&quot; )
+ggpairs(data_combined, columns=c(&quot;temp&quot;, &quot;Wind.gust..m.s.&quot;, &quot;humid&quot;, &quot;moisture1&quot;, &quot;moisture2&quot;, &quot;moisture3&quot;))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5saWJyYXJ5KGRhdGEudGFibGUpICMgdjEuOS42K1xuXG4jIEFkZCB0ZW1wIGNvbHVtbiBmcm9tIGRhdGFfaXNvX3dlYXRoZXIgd2l0aCB0aGUgbmVhcmVzdCB0aW1lc3RhbXAgdmFsdWVcbnNldERUKGRhdGFfbW9pc3R1cmUpWywgdGVtcCA6PSBzZXREVChkYXRhX2lzb3N1b193ZWF0aGVyKVtkYXRhX21vaXN0dXJlLCB0ZW1wLCBvbiA9IFwidGltZXN0YW1wXCIsIHJvbGwgPSBcIm5lYXJlc3RcIl1dXG4jIEFkZCBodW1pZCBjb2x1bW4gZnJvbSBkYXRhX2lzb193ZWF0aGVyIHdpdGggdGhlIG5lYXJlc3QgdGltZXN0YW1wIHZhbHVlXG5zZXREVChkYXRhX21vaXN0dXJlKVssIGh1bWlkIDo9IHNldERUKGRhdGFfaXNvc3VvX3dlYXRoZXIpW2RhdGFfbW9pc3R1cmUsIGh1bWlkLCBvbiA9IFwidGltZXN0YW1wXCIsIHJvbGwgPSBcIm5lYXJlc3RcIl1dXG5cbiMgQWRkIHdhdGVyX2hlaWdodDEgY29sdW1uIGZyb20gZGF0YV9ncm91bmRfbGV2ZWwgd2l0aCB0aGUgbmVhcmVzdCB0aW1lc3RhbXAgdmFsdWVcbnNldERUKGRhdGFfbW9pc3R1cmUpWywgd2F0ZXJfaGVpZ2h0MSA6PSBzZXREVChkYXRhX2dyb3VuZF9sZXZlbClbZGF0YV9tb2lzdHVyZSwgd2F0ZXJfaGVpZ2h0MSwgb24gPSBcInRpbWVzdGFtcFwiLCByb2xsID0gXCJuZWFyZXN0XCJdXVxuIyBBZGQgd2F0ZXJfaGVpZ2h0MiBjb2x1bW4gZnJvbSBkYXRhX2dyb3VuZF9sZXZlbCB3aXRoIHRoZSBuZWFyZXN0IHRpbWVzdGFtcCB2YWx1ZVxuc2V0RFQoZGF0YV9tb2lzdHVyZSlbLCB3YXRlcl9oZWlnaHQyIDo9IHNldERUKGRhdGFfZ3JvdW5kX2xldmVsKVtkYXRhX21vaXN0dXJlLCB3YXRlcl9oZWlnaHQyLCBvbiA9IFwidGltZXN0YW1wXCIsIHJvbGwgPSBcIm5lYXJlc3RcIl1dXG4jIEFkZCB3YXRlcl9oZWlnaHQyIGNvbHVtbiBmcm9tIGRhdGFfZ3JvdW5kX2xldmVsIHdpdGggdGhlIG5lYXJlc3QgdGltZXN0YW1wIHZhbHVlXG5zZXREVChkYXRhX21vaXN0dXJlKVssIHdhdGVyX2hlaWdodDMgOj0gc2V0RFQoZGF0YV9ncm91bmRfbGV2ZWwpW2RhdGFfbW9pc3R1cmUsIHdhdGVyX2hlaWdodDMsIG9uID0gXCJ0aW1lc3RhbXBcIiwgcm9sbCA9IFwibmVhcmVzdFwiXV1cbmBgYCJ9 -->
+<pre class="r"><code>
+library(data.table) # v1.9.6+
+
+# Add temp column from data_iso_weather with the nearest timestamp value
+setDT(data_moisture)[, temp := setDT(data_isosuo_weather)[data_moisture, temp, on = &quot;timestamp&quot;, roll = &quot;nearest&quot;]]
+# Add humid column from data_iso_weather with the nearest timestamp value
+setDT(data_moisture)[, humid := setDT(data_isosuo_weather)[data_moisture, humid, on = &quot;timestamp&quot;, roll = &quot;nearest&quot;]]
+
+# Add water_height1 column from data_ground_level with the nearest timestamp value
+setDT(data_moisture)[, water_height1 := setDT(data_ground_level)[data_moisture, water_height1, on = &quot;timestamp&quot;, roll = &quot;nearest&quot;]]
+# Add water_height2 column from data_ground_level with the nearest timestamp value
+setDT(data_moisture)[, water_height2 := setDT(data_ground_level)[data_moisture, water_height2, on = &quot;timestamp&quot;, roll = &quot;nearest&quot;]]
+# Add water_height2 column from data_ground_level with the nearest timestamp value
+setDT(data_moisture)[, water_height3 := setDT(data_ground_level)[data_moisture, water_height3, on = &quot;timestamp&quot;, roll = &quot;nearest&quot;]]</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwYWlycyhkYXRhX21vaXN0dXJlLCBjb2x1bW5zPWMoXCJ0ZW1wXCIsIFwid2F0ZXJfaGVpZ2h0MVwiLCBcIndhdGVyX2hlaWdodDJcIiwgXCJ3YXRlcl9oZWlnaHQzXCIsIFwiaHVtaWRcIiwgXCJtb2lzdHVyZTFcIiwgXCJtb2lzdHVyZTJcIiwgXCJtb2lzdHVyZTNcIikpXG5cbmBgYCJ9 -->
+<pre class="r"><code>ggpairs(data_moisture, columns=c(&quot;temp&quot;, &quot;water_height1&quot;, &quot;water_height2&quot;, &quot;water_height3&quot;, &quot;humid&quot;, &quot;moisture1&quot;, &quot;moisture2&quot;, &quot;moisture3&quot;))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRpbWVzdGFtcCwgeSA9IHRlbXAsIGNvbG9yID0gaHVtaWQpKVxuYGBgIn0= -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = timestamp, y = temp, color = humid))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPSB0aW1lc3RhbXAsIHkgPSB0ZW1wKSlcbmBgYCJ9 -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = timestamp, y = temp))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRlbXAsIHkgPSBodW1pZCwgY29sb3IgPSB0aW1lc3RhbXApKVxuYGBgIn0= -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = temp, y = humid, color = timestamp))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPSB0ZW1wLCB5ID0gaHVtaWQpKVxuYGBgIn0= -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = temp, y = humid))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRpbWVzdGFtcCwgeSA9IGh1bWlkLCBjb2xvcj0gdGVtcCkpXG5gYGAifQ== -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = timestamp, y = humid, color= temp))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPSB0aW1lc3RhbXAsIHkgPSBodW1pZCkpXG5gYGAifQ== -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = timestamp, y = humid))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRpbWVzdGFtcCwgeSA9IHdhdGVyX2hlaWdodDEpKVxuYGBgIn0= -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = timestamp, y = water_height1))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPSB0aW1lc3RhbXAsIHkgPSB3YXRlcl9oZWlnaHQxKSlcbmBgYCJ9 -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = timestamp, y = water_height1))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRpbWVzdGFtcCwgeSA9IHdhdGVyX2hlaWdodDIpKVxuYGBgIn0= -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = timestamp, y = water_height2))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPXRpbWVzdGFtcCAsIHkgPSB3YXRlcl9oZWlnaHQyKSlcbmBgYCJ9 -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x =timestamp , y = water_height2))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRpbWVzdGFtcCwgeSA9IHdhdGVyX2hlaWdodDMpKVxuYGBgIn0= -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = timestamp, y = water_height3))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPSB0aW1lc3RhbXAsIHkgPSB3YXRlcl9oZWlnaHQzKSlcbmBgYCJ9 -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = timestamp, y = water_height3))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHdhdGVyX2hlaWdodDEsIHkgPSB3YXRlcl9oZWlnaHQyLCBjb2xvciA9IHRpbWVzdGFtcCkpXG5gYGAifQ== -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = water_height1, y = water_height2, color = timestamp))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPSB3YXRlcl9oZWlnaHQxLCB5ID0gd2F0ZXJfaGVpZ2h0MikpXG5gYGAifQ== -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = water_height1, y = water_height2))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHdhdGVyX2hlaWdodDEsIHkgPSB3YXRlcl9oZWlnaHQzLCBjb2xvciA9IHRpbWVzdGFtcCkpXG5gYGAifQ== -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = water_height1, y = water_height3, color = timestamp))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHdhdGVyX2hlaWdodDIsIHkgPSB3YXRlcl9oZWlnaHQzLCBjb2xvciA9IHRpbWVzdGFtcCkpXG5gYGAifQ== -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = water_height2, y = water_height3, color = timestamp))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHdhdGVyX2hlaWdodDIsIHkgPSB3YXRlcl9oZWlnaHQzLCBjb2xvciA9IHRpbWVzdGFtcCkpXG5gYGAifQ== -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = water_height2, y = water_height3, color = timestamp))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRlbXAsIHkgPSB3YXRlcl9oZWlnaHQyLCBjb2xvciA9IHRpbWVzdGFtcCkpXG5gYGAifQ== -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = temp, y = water_height2, color = timestamp))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRlbXAsIHkgPSB3YXRlcl9oZWlnaHQzLCBjb2xvciA9IHRpbWVzdGFtcCkpXG5gYGAifQ== -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = temp, y = water_height3, color = timestamp))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIFxuICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPSB0ZW1wLCB5ID0gaHVtaWQpKVxuYGBgIn0= -->
+<pre class="r"><code>ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = temp, y = humid))</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -342,7 +555,7 @@ ggplot(data_combined, aes(x=temp)) + geom_histogram(binwidth = 0.05)
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiTW9pc3R1cmUgQW5hbHlzaXMiCm91dHB1dDoKICBodG1sX2RvY3VtZW50OgogICAgZGZfcHJpbnQ6IHBhZ2VkCiAgaHRtbF9ub3RlYm9vazogZGVmYXVsdAogIHBkZl9kb2N1bWVudDogZGVmYXVsdAotLS0KYGBge3IsIHNldHVwfQpsaWJyYXJ5KHBzeWNoKQoKIyBsaWJyYXJ5CmxpYnJhcnkoZ2dwbG90MikKbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkoZGF0YS50YWJsZSkKbGlicmFyeShHR2FsbHkpCmxpYnJhcnkobHVicmlkYXRlKQpgYGAKYGBge3IsIHhsc2xvYWRfaXNvfQpsaWJyYXJ5KHJlYWR4bCkKSXNvc3VvXzEgPC0gcmVhZF9leGNlbCgiLi4vRGF0YS9Jc29zdW8gMTEuNy4tMy44Xy54bHN4IikKbmFtZXMoSXNvc3VvXzEpIDwtIG1ha2UubmFtZXMobmFtZXMoSXNvc3VvXzEpKQpkYXRhX2lzb3N1b193ZWF0aGVyIDwtIElzb3N1b18xICU+JQogIHJlbmFtZSgidGVtcCI9VGVtcGVyYXR1cmUuLkMuKSAlPiUKICByZW5hbWUoImh1bWlkIj1IdW1pZGl0eS4uLi4pICAlPiUKICByZW5hbWUoInRpbWVzdGFtcCI9IERhdGUuVGltZS5ZLm0uZC5ILk0uUy5FRVNULi4pICU+JSAKICBtdXRhdGUoInRpbWVzdGFtcCI9IHltZF9obXModGltZXN0YW1wKSkKCiMgc2V0RFQobXlEYXRhKQojIHNldERUKG15RGF0YSlbSXNvc3VvXzEsIGNoMSwgcm9sbCA9ICJuZWFyZXN0Iiwgb24gPSAidGltZXN0YW1wIl0KCmBgYAoKCmBgYHtyLCBsb2FkX21vaXN0dXJlX2RhdGF9CmRhdGFfbW9pc3R1cmUgPC0gcmVhZC5jc3YoIi4uL0RhdGEvQUEyX2RhdGEuY3N2Iiwgc2VwID0gIjsiKSAlPiUgCiAgcmVuYW1lKG1vaXN0dXJlMSA9ICJjaDEiKSAlPiUgCiAgcmVuYW1lKG1vaXN0dXJlMiA9ICJDaDIiKSAlPiUgCiAgcmVuYW1lKG1vaXN0dXJlMyA9ICJDaDMiKSAlPiUgCiAgbXV0YXRlKCJ0aW1lc3RhbXAiPSB5bWRfaG1zKHRpbWVzdGFtcCkpCiMgdGVzdERhdGEgPC0gbXlEYXRhWzE6MTAwLCBdCmBgYAoKYGBge3IsIGxvYWRfZ3JvdW5kX2xldmVsX2RhdGF9CmRhdGFfZ3JvdW5kX2xldmVsXzEgPC0gcmVhZC5jc3YoIi4uL0RhdGEvQUFfMl8xLmNzdiIsIHNlcCA9ICI7IikgJT4lIAogIHNsaWNlKDEyOm4oKSkgJT4lIAogIHNlbGVjdCgiWCIsICJYLjEiKSAlPiUgCiAgcmVuYW1lKHRpbWVzdGFtcCA9IFgpICU+JQogIHJlbmFtZSh3YXRlcl9oZWlnaHQxID0gWC4xKSAlPiUKICBtdXRhdGUod2F0ZXJfaGVpZ2h0MSA9IGFzLm51bWVyaWMod2F0ZXJfaGVpZ2h0MSkpICU+JSAKICBtdXRhdGUodGltZXN0YW1wPSBnc3ViKCJbLl0iLCAiLSIsIHRpbWVzdGFtcCkpICU+JSAKICBtdXRhdGUodGltZXN0YW1wPSBkbXlfaG1zKHRpbWVzdGFtcCkpICU+JSAKICBmaWx0ZXIoIWlzLm5hKHRpbWVzdGFtcCkpCgpzdHIoZGF0YV9ncm91bmRfbGV2ZWxfMSR3YXRlcl9oZWlnaHQxKQoKc3VtKGR1cGxpY2F0ZWQoZGF0YV9ncm91bmRfbGV2ZWxfMSR0aW1lc3RhbXApKQoKdGFpbChkYXRhX2dyb3VuZF9sZXZlbF8xKQoKYSA8LSBkYXRhX2dyb3VuZF9sZXZlbF8xW2R1cGxpY2F0ZWQoZGF0YV9ncm91bmRfbGV2ZWxfMSR0aW1lc3RhbXApLCBdCgpkYXRhX2dyb3VuZF9sZXZlbF8yIDwtIHJlYWQuY3N2KCIuLi9EYXRhL0FBXzJfMi5jc3YiLCBzZXAgPSAiOyIpICU+JSAKICBzbGljZSgxMjpuKCkpICU+JSAKICBzZWxlY3QoIlgiLCAiWC4xIikgJT4lIAogIHJlbmFtZSh0aW1lc3RhbXAgPSBYKSAlPiUKICByZW5hbWUod2F0ZXJfaGVpZ2h0MiA9IFguMSkgJT4lCiAgbXV0YXRlKHdhdGVyX2hlaWdodDIgPSBhcy5udW1lcmljKHdhdGVyX2hlaWdodDIpKSAlPiUgCiAgbXV0YXRlKHRpbWVzdGFtcD0gZ3N1YigiWy5dIiwgIi0iLCB0aW1lc3RhbXApKSAlPiUgCiAgbXV0YXRlKHRpbWVzdGFtcD0gZG15X2htcyh0aW1lc3RhbXApKSAlPiUgCiAgZmlsdGVyKCFpcy5uYSh0aW1lc3RhbXApKQoKZGF0YV9ncm91bmRfbGV2ZWxfMyA8LSByZWFkLmNzdigiLi4vRGF0YS9BQV8yXzMuY3N2Iiwgc2VwID0gIjsiKSAlPiUgCiAgc2xpY2UoMTI6bigpKSAlPiUgCiAgc2VsZWN0KCJYIiwgIlguMSIpICU+JSAKICByZW5hbWUodGltZXN0YW1wID0gWCkgJT4lCiAgcmVuYW1lKHdhdGVyX2hlaWdodDMgPSBYLjEpICU+JQogIG11dGF0ZSh3YXRlcl9oZWlnaHQzID0gYXMubnVtZXJpYyh3YXRlcl9oZWlnaHQzKSkgJT4lIAogIG11dGF0ZSh0aW1lc3RhbXA9IGdzdWIoIlsuXSIsICItIiwgdGltZXN0YW1wKSkgJT4lIAogIG11dGF0ZSh0aW1lc3RhbXA9IGRteV9obXModGltZXN0YW1wKSkgJT4lIAogIGZpbHRlcighaXMubmEodGltZXN0YW1wKSkKCgojIFRPIERPOiBjb252ZXJ0IHRvIHRpbWVzdGFtcAogICNtdXRhdGUodGltZXN0YW1wID0gYXMudGltZSkKCnN1bW1hcnkoZGF0YV9ncm91bmRfbGV2ZWxfMykKZGF0YV9ncm91bmRfbGV2ZWwgPC0gaW5uZXJfam9pbihkYXRhX2dyb3VuZF9sZXZlbF8xLCBkYXRhX2dyb3VuZF9sZXZlbF8yLCBieT0idGltZXN0YW1wIikKZGF0YV9ncm91bmRfbGV2ZWwgPC0gaW5uZXJfam9pbihkYXRhX2dyb3VuZF9sZXZlbCwgZGF0YV9ncm91bmRfbGV2ZWxfMywgYnk9InRpbWVzdGFtcCIpCgojVE9ETyBjaGVjayB0aGUgam9pbiBpcyBjb3JyZWN0LiBXaGF0IGhhcHBlbmVkIHRvIG1pc3NpbmcgbWVhc3VyZW1lbnRzLiBXaHkgdGhlcmUgaXMgbW9yZSBkYXRhCmBgYApgYGB7ciBjb21iaW5lX2RhdGF9CgpsaWJyYXJ5KGRhdGEudGFibGUpICMgdjEuOS42KwoKCnNldERUKGRhdGFfbW9pc3R1cmUpWywgdGVtcCA6PSBzZXREVChkYXRhX2lzb3N1b193ZWF0aGVyKVtkYXRhX21vaXN0dXJlLCB0ZW1wLCBvbiA9ICJ0aW1lc3RhbXAiLCByb2xsID0gIm5lYXJlc3QiXV0KCnNldERUKGRhdGFfbW9pc3R1cmUpWywgd2F0ZXJfaGVpZ2h0MSA6PSBzZXREVChkYXRhX2dyb3VuZF9sZXZlbClbZGF0YV9tb2lzdHVyZSwgd2F0ZXJfaGVpZ2h0MSwgb24gPSAidGltZXN0YW1wIiwgcm9sbCA9ICJuZWFyZXN0Il1dCgpgYGAKCgoKIyBPdmVydmlldyBvZiBEYXRhCmBgYHtyLCBleHBsb3JlRGF0YX0KaGVhZChkYXRhX2NvbWJpbmVkKQpkZXNjcmliZShkYXRhX2NvbWJpbmVkKQpgYGAKIyBQbG90cwojIyBIaXN0b2dyYW0KYGBge3IsIGhpc3RvZ3JhbX0KIyBCYXNpYyBoaXN0b2dyYW0KZ2dwbG90KGRhdGFfY29tYmluZWQsIGFlcyh4PW1vaXN0dXJlMSkpICsgZ2VvbV9oaXN0b2dyYW0oYmlud2lkdGggPSAwLjAwNSkKZ2dwbG90KGRhdGFfY29tYmluZWQsIGFlcyh4PW1vaXN0dXJlMikpICsgZ2VvbV9oaXN0b2dyYW0oKQoKCiMgQ3VzdG9tIEJpbm5pbmcuIEkgY2FuIGp1c3QgZ2l2ZSB0aGUgc2l6ZSBvZiB0aGUgYmluCmdncGxvdChkYXRhX2NvbWJpbmVkLCBhZXMoeD1tb2lzdHVyZTMpKSArIGdlb21faGlzdG9ncmFtKGJpbndpZHRoID0gMC4wMDAwMSkKCgpgYGAKIyMgU2NhdHRlcnBsb3RzCmBgYHtyLCBzY2F0dGVycGxvdHN9CiMgYmFzaWMgc2NhdHRlcnBsb3QKZ2dwbG90KGRhdGFfY29tYmluZWQsIGFlcyh4PXRpbWVzdGFtcCwgeT1tb2lzdHVyZTMpKSArIAogIGdlb21fcG9pbnQoKQpgYGAKCmBgYHtyLCBwbG90WGxzX2lzb30KIyBDdXN0b20gQmlubmluZy4gSSBjYW4ganVzdCBnaXZlIHRoZSBzaXplIG9mIHRoZSBiaW4KZ2dwbG90KGRhdGFfY29tYmluZWQsIGFlcyh4PXRlbXApKSArIGdlb21faGlzdG9ncmFtKGJpbndpZHRoID0gMC4wNSkKCgpgYGAKCmBgYHtyLCBwbG90UGFpcnN9CmdncGFpcnMoZGF0YV9jb21iaW5lZCwgY29sdW1ucz1jKCJ0ZW1wIiwgIldpbmQuZ3VzdC4ubS5zLiIsICJodW1pZCIsICJtb2lzdHVyZTEiLCAibW9pc3R1cmUyIiwgIm1vaXN0dXJlMyIpKQpgYGAKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiTW9pc3R1cmUgQW5hbHlzaXMiCm91dHB1dDoKICBodG1sX2RvY3VtZW50OgogIGRmX3ByaW50OiBwYWdlZAogIGh0bWxfbm90ZWJvb2s6IGRlZmF1bHQKICBwZGZfZG9jdW1lbnQ6IGRlZmF1bHQKLS0tCmBgYHtyLCBzZXR1cH0KbGlicmFyeShwc3ljaCkKCiMgbGlicmFyeQpsaWJyYXJ5KGdncGxvdDIpCmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGRhdGEudGFibGUpCmxpYnJhcnkoR0dhbGx5KQpsaWJyYXJ5KGx1YnJpZGF0ZSkKYGBgCgpgYGB7cn0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGNhY2hlID0gVFJVRSkKYGBgCgoKI0xvYWQgd2VhdGhlciBkYXRhIGZyb20gSXNvc3VvIDIyLjgtMjYuMDkgJiBMb2FkIG1vaXN0dXJlIGRhdGEgZnJvbSBJc29zdW8gMjAuNy0xMC4wOQpgYGB7ciwgeGxzbG9hZF9pc28yfQojIElmIHhscyBmaWxlcyBjaGFuZ2UgdGhlbiBydW4gCiMgc291cmNlKCd+L0RvY3VtZW50cy9HaXRIdWIvTW9pc3R1cmUtUHJlZGljdGlvbi9yZWFkX3dlYXRoZXJfc3RhdGlvbi5SJykKbG9hZCgiLi4vRGF0YS9Jc29zdW8uUiIpCmxvYWQoIi4uL0RhdGEvSGlyc2lrb3JwaS5SIikKI3Bvb2xlZF9kYXRhIDwtIHJiaW5kKElzb3N1bywgSGlyc2lrb3JwaSkKZGF0YV9pc29zdW9fd2VhdGhlciA8LSBJc29zdW8KYGBgCgojTG9hZCBkYXRhX21vaXN0dXJlIDIwLjA3LTEwLjA5IAoKYGBge3J9CmxvYWQoIi4uL0RhdGEvZGF0YV9tb2lzdHVyZS5SIikKYGBgCgoKI0xvYWQgZ3JvdW5kIHdhdGVyIGxldmVsIGRhdGEgZnJvbSBJc29zdW8gMjcuMDYtMDEuMTAKYGBge3IsIGxvYWRfZ3JvdW5kX2xldmVsX2RhdGF9CmRhdGFfZ3JvdW5kX2xldmVsXzEgPC0gcmVhZC5jc3YoIi4uL0RhdGEvQUFfMl8xLmNzdiIsIHNlcCA9ICI7IikgJT4lIAogIHNsaWNlKDEyOm4oKSkgJT4lIAogIHNlbGVjdCgiWCIsICJYLjEiKSAlPiUgCiAgcmVuYW1lKHRpbWVzdGFtcCA9IFgpICU+JQogIHJlbmFtZSh3YXRlcl9oZWlnaHQxID0gWC4xKSAlPiUKICBtdXRhdGUod2F0ZXJfaGVpZ2h0MSA9IGFzLm51bWVyaWMod2F0ZXJfaGVpZ2h0MSkpICU+JSAKICBtdXRhdGUodGltZXN0YW1wPSBnc3ViKCJbLl0iLCAiLSIsIHRpbWVzdGFtcCkpICU+JSAKICBtdXRhdGUodGltZXN0YW1wID0gZG15X2htcyh0aW1lc3RhbXApKSAlPiUgCiAgZmlsdGVyKCFpcy5uYSh0aW1lc3RhbXApKQoKc3RyKGRhdGFfZ3JvdW5kX2xldmVsXzEkd2F0ZXJfaGVpZ2h0MSkKCnN1bShkdXBsaWNhdGVkKGRhdGFfZ3JvdW5kX2xldmVsXzEkdGltZXN0YW1wKSkKCnRhaWwoZGF0YV9ncm91bmRfbGV2ZWxfMSkKCmEgPC0gZGF0YV9ncm91bmRfbGV2ZWxfMVtkdXBsaWNhdGVkKGRhdGFfZ3JvdW5kX2xldmVsXzEkdGltZXN0YW1wKSwgXQoKZGF0YV9ncm91bmRfbGV2ZWxfMiA8LSByZWFkLmNzdigiLi4vRGF0YS9BQV8yXzIuY3N2Iiwgc2VwID0gIjsiKSAlPiUgCiAgc2xpY2UoMTI6bigpKSAlPiUgCiAgc2VsZWN0KCJYIiwgIlguMSIpICU+JSAKICByZW5hbWUodGltZXN0YW1wID0gWCkgJT4lCiAgcmVuYW1lKHdhdGVyX2hlaWdodDIgPSBYLjEpICU+JQogIG11dGF0ZSh3YXRlcl9oZWlnaHQyID0gYXMubnVtZXJpYyh3YXRlcl9oZWlnaHQyKSkgJT4lIAogIG11dGF0ZSh0aW1lc3RhbXA9IGdzdWIoIlsuXSIsICItIiwgdGltZXN0YW1wKSkgJT4lIAogIG11dGF0ZSh0aW1lc3RhbXA9IGRteV9obXModGltZXN0YW1wKSkgJT4lIAogIGZpbHRlcighaXMubmEodGltZXN0YW1wKSkKCmRhdGFfZ3JvdW5kX2xldmVsXzMgPC0gcmVhZC5jc3YoIi4uL0RhdGEvQUFfMl8zLmNzdiIsIHNlcCA9ICI7IikgJT4lIAogIHNsaWNlKDEyOm4oKSkgJT4lIAogIHNlbGVjdCgiWCIsICJYLjEiKSAlPiUgCiAgcmVuYW1lKHRpbWVzdGFtcCA9IFgpICU+JQogIHJlbmFtZSh3YXRlcl9oZWlnaHQzID0gWC4xKSAlPiUKICBtdXRhdGUod2F0ZXJfaGVpZ2h0MyA9IGFzLm51bWVyaWMod2F0ZXJfaGVpZ2h0MykpICU+JSAKICBtdXRhdGUodGltZXN0YW1wPSBnc3ViKCJbLl0iLCAiLSIsIHRpbWVzdGFtcCkpICU+JSAKICBtdXRhdGUodGltZXN0YW1wPSBkbXlfaG1zKHRpbWVzdGFtcCkpICU+JSAKICBmaWx0ZXIoIWlzLm5hKHRpbWVzdGFtcCkpCgoKIyBUTyBETzogY29udmVydCB0byB0aW1lc3RhbXAKICAjbXV0YXRlKHRpbWVzdGFtcCA9IGFzLnRpbWUpCgpzdW1tYXJ5KGRhdGFfZ3JvdW5kX2xldmVsXzMpCmRhdGFfZ3JvdW5kX2xldmVsIDwtIGlubmVyX2pvaW4oZGF0YV9ncm91bmRfbGV2ZWxfMSwgZGF0YV9ncm91bmRfbGV2ZWxfMiwgYnk9InRpbWVzdGFtcCIpCmRhdGFfZ3JvdW5kX2xldmVsIDwtIGlubmVyX2pvaW4oZGF0YV9ncm91bmRfbGV2ZWwsIGRhdGFfZ3JvdW5kX2xldmVsXzMsIGJ5PSJ0aW1lc3RhbXAiKQpkYXRhX2NvbWJpbmVkIDwtIGlubmVyX2pvaW4oZGF0YV9pc29zdW9fd2VhdGhlciwgZGF0YV9tb2lzdHVyZSwgYnk9InRpbWVzdGFtcCIpCgoKI1RPRE8gY2hlY2sgdGhlIGpvaW4gaXMgY29ycmVjdC4gV2hhdCBoYXBwZW5lZCB0byBtaXNzaW5nIG1lYXN1cmVtZW50cy4gV2h5IHRoZXJlIGlzIG1vcmUgZGF0YQpgYGAKCiMgT3ZlcnZpZXcgb2YgRGF0YQpgYGB7ciwgZXhwbG9yZURhdGF9CmhlYWQoZGF0YV9jb21iaW5lZCkKZGVzY3JpYmUoZGF0YV9jb21iaW5lZCkKYGBgCiMgT3ZlcnZpZXcgb2YgRGF0YSBpc29zdW8KYGBge3IsIGV4cGxvcmVEYXRhIGlzb3N1b30KaGVhZChJc29zdW8pCmRlc2NyaWJlKElzb3N1bykKYGBgCiMgT3ZlcnZpZXcgb2YgRGF0YSBIaXJzaWtvcnBpCmBgYHtyLCBleHBsb3JlRGF0YSBIaXJzaWtvcnBpfQpoZWFkKEhpcnNpa29ycGkpCmRlc2NyaWJlKEhpcnNpa29ycGkpCmBgYAoKCiMgUGxvdHMKIyMgSGlzdG9ncmFtCmBgYHtyLCBoaXN0b2dyYW19CiMgQmFzaWMgaGlzdG9ncmFtCmdncGxvdChkYXRhX2NvbWJpbmVkLCBhZXMoeD1tb2lzdHVyZTEpKSArIGdlb21faGlzdG9ncmFtKGJpbndpZHRoID0gMC4wMDUpCmdncGxvdChkYXRhX2NvbWJpbmVkLCBhZXMoeD1tb2lzdHVyZTIpKSArIGdlb21faGlzdG9ncmFtKCkKCgojIEN1c3RvbSBCaW5uaW5nLiBJIGNhbiBqdXN0IGdpdmUgdGhlIHNpemUgb2YgdGhlIGJpbgpnZ3Bsb3QoZGF0YV9jb21iaW5lZCwgYWVzKHg9bW9pc3R1cmUzKSkgKyBnZW9tX2hpc3RvZ3JhbShiaW53aWR0aCA9IDAuMDAwMDEpCgoKYGBgCiMjIFNjYXR0ZXJwbG90cwpgYGB7ciwgc2NhdHRlcnBsb3RzfQojIGJhc2ljIHNjYXR0ZXJwbG90CmdncGxvdChkYXRhX2NvbWJpbmVkLCBhZXMoeD10aW1lc3RhbXAsIHk9bW9pc3R1cmUzKSkgKyAKZ2VvbV9wb2ludCgpCmBgYAoKYGBge3IsIHBsb3RYbHNfaXNvfQojIEN1c3RvbSBCaW5uaW5nLiBJIGNhbiBqdXN0IGdpdmUgdGhlIHNpemUgb2YgdGhlIGJpbgpnZ3Bsb3QoZGF0YV9jb21iaW5lZCwgYWVzKHg9dGVtcCkpICsgZ2VvbV9oaXN0b2dyYW0oYmlud2lkdGggPSAwLjA1KQoKCmBgYAoKYGBge3IsIHBsb3RQYWlyc30KIyBsb2FkKGZpbGUgPSAiLi4vRGF0YS9hbGxfbW9pc3R1cmVfZGF0YS5SIiApCmdncGFpcnMoZGF0YV9jb21iaW5lZCwgY29sdW1ucz1jKCJ0ZW1wIiwgIldpbmQuZ3VzdC4ubS5zLiIsICJodW1pZCIsICJtb2lzdHVyZTEiLCAibW9pc3R1cmUyIiwgIm1vaXN0dXJlMyIpKQoKYGBgCgpgYGB7ciBjb21iaW5lX2RhdGF9CgpsaWJyYXJ5KGRhdGEudGFibGUpICMgdjEuOS42KwoKIyBBZGQgdGVtcCBjb2x1bW4gZnJvbSBkYXRhX2lzb193ZWF0aGVyIHdpdGggdGhlIG5lYXJlc3QgdGltZXN0YW1wIHZhbHVlCnNldERUKGRhdGFfbW9pc3R1cmUpWywgdGVtcCA6PSBzZXREVChkYXRhX2lzb3N1b193ZWF0aGVyKVtkYXRhX21vaXN0dXJlLCB0ZW1wLCBvbiA9ICJ0aW1lc3RhbXAiLCByb2xsID0gIm5lYXJlc3QiXV0KIyBBZGQgaHVtaWQgY29sdW1uIGZyb20gZGF0YV9pc29fd2VhdGhlciB3aXRoIHRoZSBuZWFyZXN0IHRpbWVzdGFtcCB2YWx1ZQpzZXREVChkYXRhX21vaXN0dXJlKVssIGh1bWlkIDo9IHNldERUKGRhdGFfaXNvc3VvX3dlYXRoZXIpW2RhdGFfbW9pc3R1cmUsIGh1bWlkLCBvbiA9ICJ0aW1lc3RhbXAiLCByb2xsID0gIm5lYXJlc3QiXV0KCiMgQWRkIHdhdGVyX2hlaWdodDEgY29sdW1uIGZyb20gZGF0YV9ncm91bmRfbGV2ZWwgd2l0aCB0aGUgbmVhcmVzdCB0aW1lc3RhbXAgdmFsdWUKc2V0RFQoZGF0YV9tb2lzdHVyZSlbLCB3YXRlcl9oZWlnaHQxIDo9IHNldERUKGRhdGFfZ3JvdW5kX2xldmVsKVtkYXRhX21vaXN0dXJlLCB3YXRlcl9oZWlnaHQxLCBvbiA9ICJ0aW1lc3RhbXAiLCByb2xsID0gIm5lYXJlc3QiXV0KIyBBZGQgd2F0ZXJfaGVpZ2h0MiBjb2x1bW4gZnJvbSBkYXRhX2dyb3VuZF9sZXZlbCB3aXRoIHRoZSBuZWFyZXN0IHRpbWVzdGFtcCB2YWx1ZQpzZXREVChkYXRhX21vaXN0dXJlKVssIHdhdGVyX2hlaWdodDIgOj0gc2V0RFQoZGF0YV9ncm91bmRfbGV2ZWwpW2RhdGFfbW9pc3R1cmUsIHdhdGVyX2hlaWdodDIsIG9uID0gInRpbWVzdGFtcCIsIHJvbGwgPSAibmVhcmVzdCJdXQojIEFkZCB3YXRlcl9oZWlnaHQyIGNvbHVtbiBmcm9tIGRhdGFfZ3JvdW5kX2xldmVsIHdpdGggdGhlIG5lYXJlc3QgdGltZXN0YW1wIHZhbHVlCnNldERUKGRhdGFfbW9pc3R1cmUpWywgd2F0ZXJfaGVpZ2h0MyA6PSBzZXREVChkYXRhX2dyb3VuZF9sZXZlbClbZGF0YV9tb2lzdHVyZSwgd2F0ZXJfaGVpZ2h0Mywgb24gPSAidGltZXN0YW1wIiwgcm9sbCA9ICJuZWFyZXN0Il1dCmBgYAoKYGBge3IgLXBsb3RwYWlyc30KZ2dwYWlycyhkYXRhX21vaXN0dXJlLCBjb2x1bW5zPWMoInRlbXAiLCAid2F0ZXJfaGVpZ2h0MSIsICJ3YXRlcl9oZWlnaHQyIiwgIndhdGVyX2hlaWdodDMiLCAiaHVtaWQiLCAibW9pc3R1cmUxIiwgIm1vaXN0dXJlMiIsICJtb2lzdHVyZTMiKSkKCmBgYAoKYGBge3IgLXNjYXR0ZXJwb3QgaW5kIHZhcmlhYmxlcyB0aW1lc3RhbXAvdGVtcH0KZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIAogIGdlb21fcG9pbnQobWFwcGluZyA9IGFlcyh4ID0gdGltZXN0YW1wLCB5ID0gdGVtcCwgY29sb3IgPSBodW1pZCkpCmBgYAoKYGBge3IgLWdlb21fc21vb3RoIHRlbXBlcmF0dXJlL3RpbWVzdGFtcH0KZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIAogIGdlb21fc21vb3RoKG1hcHBpbmcgPSBhZXMoeCA9IHRpbWVzdGFtcCwgeSA9IHRlbXApKQpgYGAKCgpgYGB7ciAtc2NhdHRlcnBvdCBpbmQgdmFyaWFibGVzIHRlbXAvaHVtaWR9CmdncGxvdChkYXRhID0gZGF0YV9tb2lzdHVyZSkgKyAKICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRlbXAsIHkgPSBodW1pZCwgY29sb3IgPSB0aW1lc3RhbXApKQpgYGAKCmBgYHtyIC1nZW9tX3Ntb290aCBodW1pZGl0eS90ZW1wZXJhdHVyZX0KZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIAogIGdlb21fc21vb3RoKG1hcHBpbmcgPSBhZXMoeCA9IHRlbXAsIHkgPSBodW1pZCkpCmBgYAoKYGBge3IgLXNjYXR0ZXJwb3QgaW5kIHZhcmlhYmxlcyB0aW1lc3RhbXAvaHVtaWRpdHl9CmdncGxvdChkYXRhID0gZGF0YV9tb2lzdHVyZSkgKyAKICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRpbWVzdGFtcCwgeSA9IGh1bWlkLCBjb2xvcj0gdGVtcCkpCmBgYAoKYGBge3IgLWdlb21fc21vb3RoIGh1bWlkaXR5L3RpbWVzdGFtcH0KZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIAogIGdlb21fc21vb3RoKG1hcHBpbmcgPSBhZXMoeCA9IHRpbWVzdGFtcCwgeSA9IGh1bWlkKSkKYGBgCgoKYGBge3IgLXNjYXR0ZXJwb3QgaW5kIHZhcmlhYmxlcyB3YXRlcmhlaWdodDEvdGltZXN0YW1wfQpnZ3Bsb3QoZGF0YSA9IGRhdGFfbW9pc3R1cmUpICsgCiAgZ2VvbV9wb2ludChtYXBwaW5nID0gYWVzKHggPSB0aW1lc3RhbXAsIHkgPSB3YXRlcl9oZWlnaHQxKSkKYGBgCgpgYGB7ciAtZ2VvbV9zbW9vdGggd2F0ZXJfaGVpZ2h0MS90aW1lc3RhbXB9CmdncGxvdChkYXRhID0gZGF0YV9tb2lzdHVyZSkgKyAKICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPSB0aW1lc3RhbXAsIHkgPSB3YXRlcl9oZWlnaHQxKSkKYGBgCgoKYGBge3IgLXNjYXR0ZXJwb3QgaW5kIHZhcmlhYmxlcyB3YXRlcmhlaWdodDIvdGltZXN0YW1wfQpnZ3Bsb3QoZGF0YSA9IGRhdGFfbW9pc3R1cmUpICsgCiAgZ2VvbV9wb2ludChtYXBwaW5nID0gYWVzKHggPSB0aW1lc3RhbXAsIHkgPSB3YXRlcl9oZWlnaHQyKSkKYGBgCgpgYGB7ciAtZ2VvbV9zbW9vdGggd2F0ZXJfaGVpZ2h0Mi90aW1lc3RhbXB9CmdncGxvdChkYXRhID0gZGF0YV9tb2lzdHVyZSkgKyAKICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPXRpbWVzdGFtcCAsIHkgPSB3YXRlcl9oZWlnaHQyKSkKYGBgCgpgYGB7ciAtc2NhdHRlcnBvdCBpbmQgdmFyaWFibGVzIHRpbWVzdGFtcC93YXRlcmhlaWdodDN9CmdncGxvdChkYXRhID0gZGF0YV9tb2lzdHVyZSkgKyAKICBnZW9tX3BvaW50KG1hcHBpbmcgPSBhZXMoeCA9IHRpbWVzdGFtcCwgeSA9IHdhdGVyX2hlaWdodDMpKQpgYGAKCmBgYHtyIC1nZW9tX3Ntb290aCB3YXRlcl9oZWlnaHQzL3RpbWVzdGFtcH0KZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIAogIGdlb21fc21vb3RoKG1hcHBpbmcgPSBhZXMoeCA9IHRpbWVzdGFtcCwgeSA9IHdhdGVyX2hlaWdodDMpKQpgYGAKCmBgYHtyIC1zY2F0dGVycG90IGluZCB2YXJpYWJsZXMgd2F0ZXJoZWlnaHQxL3dhdGVyaGVpZ2h0Mn0KZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIAogIGdlb21fcG9pbnQobWFwcGluZyA9IGFlcyh4ID0gd2F0ZXJfaGVpZ2h0MSwgeSA9IHdhdGVyX2hlaWdodDIsIGNvbG9yID0gdGltZXN0YW1wKSkKYGBgCgpgYGB7ciAtZ2VvbV9zbW9vdGggd2F0ZXJfaGVpZ2h0MS93YXRlcl9oZWlnaHQyfQpnZ3Bsb3QoZGF0YSA9IGRhdGFfbW9pc3R1cmUpICsgCiAgZ2VvbV9zbW9vdGgobWFwcGluZyA9IGFlcyh4ID0gd2F0ZXJfaGVpZ2h0MSwgeSA9IHdhdGVyX2hlaWdodDIpKQpgYGAKCmBgYHtyIC1zY2F0dGVycG90IGluZCB2YXJpYWJsZXMgd2F0ZXJoZWlnaHQxL3dhdGVyaGVpZ2h0M30KZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIAogIGdlb21fcG9pbnQobWFwcGluZyA9IGFlcyh4ID0gd2F0ZXJfaGVpZ2h0MSwgeSA9IHdhdGVyX2hlaWdodDMsIGNvbG9yID0gdGltZXN0YW1wKSkKYGBgCmBgYHtyIC1zY2F0dGVycG90IGluZCB2YXJpYWJsZXMgd2F0ZXJoZWlnaHQyL3dhdGVyaGVpZ2h0M30KZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIAogIGdlb21fcG9pbnQobWFwcGluZyA9IGFlcyh4ID0gd2F0ZXJfaGVpZ2h0MiwgeSA9IHdhdGVyX2hlaWdodDMsIGNvbG9yID0gdGltZXN0YW1wKSkKYGBgCgpgYGB7ciAtc2NhdHRlcnBvdCBpbmQgdmFyaWFibGVzIHRlbXBlcmF0dXJlL3dhdGVyaGVpZ2h0MX0KZ2dwbG90KGRhdGEgPSBkYXRhX21vaXN0dXJlKSArIAogIGdlb21fcG9pbnQobWFwcGluZyA9IGFlcyh4ID0gd2F0ZXJfaGVpZ2h0MiwgeSA9IHdhdGVyX2hlaWdodDMsIGNvbG9yID0gdGltZXN0YW1wKSkKYGBgCmBgYHtyIC1zY2F0dGVycG90IGluZCB2YXJpYWJsZXMgdGVtcGVyYXR1cmUvd2F0ZXJoZWlnaHQyfQpnZ3Bsb3QoZGF0YSA9IGRhdGFfbW9pc3R1cmUpICsgCiAgZ2VvbV9wb2ludChtYXBwaW5nID0gYWVzKHggPSB0ZW1wLCB5ID0gd2F0ZXJfaGVpZ2h0MiwgY29sb3IgPSB0aW1lc3RhbXApKQpgYGAKCmBgYHtyIC1zY2F0dGVycG90IGluZCB2YXJpYWJsZXMgdGVtcGVyYXR1cmUvd2F0ZXJoZWlnaHQzfQpnZ3Bsb3QoZGF0YSA9IGRhdGFfbW9pc3R1cmUpICsgCiAgZ2VvbV9wb2ludChtYXBwaW5nID0gYWVzKHggPSB0ZW1wLCB5ID0gd2F0ZXJfaGVpZ2h0MywgY29sb3IgPSB0aW1lc3RhbXApKQpgYGAKCgpgYGB7ciAtdGVtcGVyYXR1cmUvaHVtaWRpdHl9CmdncGxvdChkYXRhID0gZGF0YV9tb2lzdHVyZSkgKyAKICBnZW9tX3Ntb290aChtYXBwaW5nID0gYWVzKHggPSB0ZW1wLCB5ID0gaHVtaWQpKQpgYGAKCg==</div>
 
 
 

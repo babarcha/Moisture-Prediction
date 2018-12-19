@@ -18,10 +18,10 @@ library(lubridate)
 ```
 ```{r, xlsload_iso}
 library(readxl)
-Isosuo_1 <- read_excel("Data/Isosuo 11.7.-3.8_.xlsx")
+Isosuo_1 <- read_excel("../Data/Isosuo 11.7.-3.8_.xlsx")
 names(Isosuo_1) <- make.names(names(Isosuo_1))
 data_isosuo_weather <- Isosuo_1 %>%
-  rename("temp"=Temperature..C.) %>%
+  rename("temp"=Temperature) %>%
   rename("humid"=Humidity....)  %>%
   rename("timestamp"= Date.Time.Y.m.d.H.M.S.EEST..) %>% 
   mutate("timestamp"= ymd_hms(timestamp))
@@ -33,7 +33,7 @@ data_isosuo_weather <- Isosuo_1 %>%
 
 
 ```{r, load_moisture_data}
-data_moisture <- read.csv("./Data/AA2_data.csv", sep = ";") %>% 
+data_moisture <- read.csv("../Data/AA2_data.csv", sep = ";") %>% 
   rename(moisture1 = "ch1") %>% 
   rename(moisture2 = "Ch2") %>% 
   rename(moisture3 = "Ch3") %>% 
@@ -42,19 +42,19 @@ data_moisture <- read.csv("./Data/AA2_data.csv", sep = ";") %>%
 ```
 
 ```{r, load_ground_level_data}
-data_ground_level_1 <- read.csv("./Data/AA_2_1.csv", sep = ";") %>% 
+data_ground_level_1 <- read.csv("../Data/AA_2_1.csv", sep = ";") %>% 
   select("X", "X.1") %>% 
   rename(timestamp = X) %>%
   rename(water_height1 = X.1) %>%
   slice(12:n())
 
-data_ground_level_2 <- read.csv("./Data/AA_2_2.csv", sep = ";") %>% 
+data_ground_level_2 <- read.csv("../Data/AA_2_2.csv", sep = ";") %>% 
   select("X", "X.1") %>% 
   rename(timestamp = X) %>%
   rename(water_height2 = X.1) %>%
   slice(12:n())
 
-data_ground_level_3 <- read.csv("./Data/AA_2_3.csv", sep = ";") %>% 
+data_ground_level_3 <- read.csv("../Data/AA_2_3.csv", sep = ";") %>% 
   select("X", "X.1") %>% 
   rename(timestamp = X) %>%
   rename(water_height3 = X.1) %>%

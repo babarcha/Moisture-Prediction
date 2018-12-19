@@ -137,12 +137,12 @@ library(ggplot2)</code></pre>
 ## 
 ##     %+%, alpha</code></pre>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages ----------------------------------------------------------------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## -- Attaching packages ---------------------------------------------------------------------------------- tidyverse 1.2.1 --</code></pre>
 <pre><code>## v tibble  1.4.2     v purrr   0.2.5
 ## v tidyr   0.8.1     v dplyr   0.7.6
 ## v readr   1.1.1     v stringr 1.3.1
 ## v tibble  1.4.2     v forcats 0.3.0</code></pre>
-<pre><code>## -- Conflicts -------------------------------------------------------------------------------- tidyverse_conflicts() --
+<pre><code>## -- Conflicts ------------------------------------------------------------------------------------- tidyverse_conflicts() --
 ## x ggplot2::%+%()   masks psych::%+%()
 ## x ggplot2::alpha() masks psych::alpha()
 ## x dplyr::filter()  masks stats::filter()
@@ -173,35 +173,35 @@ library(ggplot2)</code></pre>
 ## 
 ##     date</code></pre>
 <pre class="r"><code>library(readxl)
-Isosuo_1 &lt;- read_excel(&quot;Data/Isosuo 11.7.-3.8_.xlsx&quot;)
+Isosuo_1 &lt;- read_excel(&quot;../Data/Isosuo 11.7.-3.8_.xlsx&quot;)
 names(Isosuo_1) &lt;- make.names(names(Isosuo_1))
 data_isosuo_weather &lt;- Isosuo_1 %&gt;%
-  rename(&quot;temp&quot;=Temperature..C.) %&gt;%
+  rename(&quot;temp&quot;=Temperature) %&gt;%
   rename(&quot;humid&quot;=Humidity....)  %&gt;%
   rename(&quot;timestamp&quot;= Date.Time.Y.m.d.H.M.S.EEST..) %&gt;% 
   mutate(&quot;timestamp&quot;= ymd_hms(timestamp))
 
 # setDT(myData)
 # setDT(myData)[Isosuo_1, ch1, roll = &quot;nearest&quot;, on = &quot;timestamp&quot;]</code></pre>
-<pre class="r"><code>data_moisture &lt;- read.csv(&quot;./Data/AA2_data.csv&quot;, sep = &quot;;&quot;) %&gt;% 
+<pre class="r"><code>data_moisture &lt;- read.csv(&quot;../Data/AA2_data.csv&quot;, sep = &quot;;&quot;) %&gt;% 
   rename(moisture1 = &quot;ch1&quot;) %&gt;% 
   rename(moisture2 = &quot;Ch2&quot;) %&gt;% 
   rename(moisture3 = &quot;Ch3&quot;) %&gt;% 
   mutate(&quot;timestamp&quot;= ymd_hms(timestamp))
 # testData &lt;- myData[1:100, ]</code></pre>
-<pre class="r"><code>data_ground_level_1 &lt;- read.csv(&quot;./Data/AA_2_1.csv&quot;, sep = &quot;;&quot;) %&gt;% 
+<pre class="r"><code>data_ground_level_1 &lt;- read.csv(&quot;../Data/AA_2_1.csv&quot;, sep = &quot;;&quot;) %&gt;% 
   select(&quot;X&quot;, &quot;X.1&quot;) %&gt;% 
   rename(timestamp = X) %&gt;%
   rename(water_height1 = X.1) %&gt;%
   slice(12:n())
 
-data_ground_level_2 &lt;- read.csv(&quot;./Data/AA_2_2.csv&quot;, sep = &quot;;&quot;) %&gt;% 
+data_ground_level_2 &lt;- read.csv(&quot;../Data/AA_2_2.csv&quot;, sep = &quot;;&quot;) %&gt;% 
   select(&quot;X&quot;, &quot;X.1&quot;) %&gt;% 
   rename(timestamp = X) %&gt;%
   rename(water_height2 = X.1) %&gt;%
   slice(12:n())
 
-data_ground_level_3 &lt;- read.csv(&quot;./Data/AA_2_3.csv&quot;, sep = &quot;;&quot;) %&gt;% 
+data_ground_level_3 &lt;- read.csv(&quot;../Data/AA_2_3.csv&quot;, sep = &quot;;&quot;) %&gt;% 
   select(&quot;X&quot;, &quot;X.1&quot;) %&gt;% 
   rename(timestamp = X) %&gt;%
   rename(water_height3 = X.1) %&gt;%
@@ -230,6 +230,7 @@ summary(data_ground_level_3)</code></pre>
 
 #TODO check the join is correct. What happened to missing measurements. Why there is more data</code></pre>
 <pre class="r"><code>data_combined &lt;- inner_join(data_isosuo_weather, data_moisture, by=&quot;timestamp&quot;)</code></pre>
+<pre class="r"><code>save(data_moisture, data_combined, file=&quot;../Data/all_moisture_data.R&quot;)</code></pre>
 <div id="overview-of-data" class="section level1">
 <h1>Overview of Data</h1>
 <pre class="r"><code>head(data_combined)</code></pre>

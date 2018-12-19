@@ -2,7 +2,7 @@
 title: "Moisture Analysis"
 output:
   html_document:
-    df_print: paged
+  df_print: paged
   html_notebook: default
   pdf_document: default
 ---
@@ -16,31 +16,30 @@ library(data.table)
 library(GGally)
 library(lubridate)
 ```
-```{r, xlsload_iso}
-library(readxl)
-Isosuo_1 <- read_excel("../Data/Isosuo 11.7.-3.8_.xlsx")
-names(Isosuo_1) <- make.names(names(Isosuo_1))
-data_isosuo_weather <- Isosuo_1 %>%
-  rename("temp"=Temperature..C.) %>%
-  rename("humid"=Humidity....)  %>%
-  rename("timestamp"= Date.Time.Y.m.d.H.M.S.EEST..) %>% 
-  mutate("timestamp"= ymd_hms(timestamp))
 
-# setDT(myData)
-# setDT(myData)[Isosuo_1, ch1, roll = "nearest", on = "timestamp"]
-
+```{r}
+knitr::opts_chunk$set(cache = TRUE)
 ```
 
 
-```{r, load_moisture_data}
-data_moisture <- read.csv("../Data/AA2_data.csv", sep = ";") %>% 
-  rename(moisture1 = "ch1") %>% 
-  rename(moisture2 = "Ch2") %>% 
-  rename(moisture3 = "Ch3") %>% 
-  mutate("timestamp"= ymd_hms(timestamp))
-# testData <- myData[1:100, ]
+#Load weather data from Isosuo 22.8-26.09 & Load moisture data from Isosuo 20.7-10.09
+```{r, xlsload_iso2}
+# If xls files change then run 
+# source('~/Documents/GitHub/Moisture-Prediction/read_weather_station.R')
+load("../Data/Isosuo.R")
+load("../Data/Hirsikorpi.R")
+#pooled_data <- rbind(Isosuo, Hirsikorpi)
+data_isosuo_weather <- Isosuo
 ```
 
+#Load data_moisture 20.07-10.09 
+
+```{r}
+load("../Data/data_moisture.R")
+```
+
+
+#Load ground water level data from Isosuo 27.06-01.10
 ```{r, load_ground_level_data}
 data_ground_level_1 <- read.csv("../Data/AA_2_1.csv", sep = ";") %>% 
   slice(12:n()) %>% 
@@ -49,7 +48,7 @@ data_ground_level_1 <- read.csv("../Data/AA_2_1.csv", sep = ";") %>%
   rename(water_height1 = X.1) %>%
   mutate(water_height1 = as.numeric(water_height1)) %>% 
   mutate(timestamp= gsub("[.]", "-", timestamp)) %>% 
-  mutate(timestamp= dmy_hms(timestamp)) %>% 
+  mutate(timestamp = dmy_hms(timestamp)) %>% 
   filter(!is.na(timestamp))
 
 str(data_ground_level_1$water_height1)
@@ -87,27 +86,29 @@ data_ground_level_3 <- read.csv("../Data/AA_2_3.csv", sep = ";") %>%
 summary(data_ground_level_3)
 data_ground_level <- inner_join(data_ground_level_1, data_ground_level_2, by="timestamp")
 data_ground_level <- inner_join(data_ground_level, data_ground_level_3, by="timestamp")
+data_combined <- inner_join(data_isosuo_weather, data_moisture, by="timestamp")
+
 
 #TODO check the join is correct. What happened to missing measurements. Why there is more data
 ```
-```{r combine_data}
-
-library(data.table) # v1.9.6+
-
-
-setDT(data_moisture)[, temp := setDT(data_isosuo_weather)[data_moisture, temp, on = "timestamp", roll = "nearest"]]
-
-setDT(data_moisture)[, water_height1 := setDT(data_ground_level)[data_moisture, water_height1, on = "timestamp", roll = "nearest"]]
-
-```
-
-
 
 # Overview of Data
 ```{r, exploreData}
 head(data_combined)
 describe(data_combined)
 ```
+# Overview of Data isosuo
+```{r, exploreData isosuo}
+head(Isosuo)
+describe(Isosuo)
+```
+# Overview of Data Hirsikorpi
+```{r, exploreData Hirsikorpi}
+head(Hirsikorpi)
+describe(Hirsikorpi)
+```
+
+
 # Plots
 ## Histogram
 ```{r, histogram}
@@ -125,7 +126,7 @@ ggplot(data_combined, aes(x=moisture3)) + geom_histogram(binwidth = 0.00001)
 ```{r, scatterplots}
 # basic scatterplot
 ggplot(data_combined, aes(x=timestamp, y=moisture3)) + 
-  geom_point()
+geom_point()
 ```
 
 ```{r, plotXls_iso}
@@ -136,6 +137,132 @@ ggplot(data_combined, aes(x=temp)) + geom_histogram(binwidth = 0.05)
 ```
 
 ```{r, plotPairs}
+# load(file = "../Data/all_moisture_data.R" )
 ggpairs(data_combined, columns=c("temp", "Wind.gust..m.s.", "humid", "moisture1", "moisture2", "moisture3"))
+
+```
+
+```{r combine_data}
+
+library(data.table) # v1.9.6+
+
+# Add temp column from data_iso_weather with the nearest timestamp value
+setDT(data_moisture)[, temp := setDT(data_isosuo_weather)[data_moisture, temp, on = "timestamp", roll = "nearest"]]
+# Add humid column from data_iso_weather with the nearest timestamp value
+setDT(data_moisture)[, humid := setDT(data_isosuo_weather)[data_moisture, humid, on = "timestamp", roll = "nearest"]]
+
+# Add water_height1 column from data_ground_level with the nearest timestamp value
+setDT(data_moisture)[, water_height1 := setDT(data_ground_level)[data_moisture, water_height1, on = "timestamp", roll = "nearest"]]
+# Add water_height2 column from data_ground_level with the nearest timestamp value
+setDT(data_moisture)[, water_height2 := setDT(data_ground_level)[data_moisture, water_height2, on = "timestamp", roll = "nearest"]]
+# Add water_height2 column from data_ground_level with the nearest timestamp value
+setDT(data_moisture)[, water_height3 := setDT(data_ground_level)[data_moisture, water_height3, on = "timestamp", roll = "nearest"]]
+```
+
+```{r -plotpairs}
+ggpairs(data_moisture, columns=c("temp", "water_height1", "water_height2", "water_height3", "humid", "moisture1", "moisture2", "moisture3"))
+
+```
+
+```{r -scatterpot ind variables timestamp/temp}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = timestamp, y = temp, color = humid))
+```
+
+```{r -geom_smooth temperature/timestamp}
+ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = timestamp, y = temp))
+```
+
+
+```{r -scatterpot ind variables temp/humid}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = temp, y = humid, color = timestamp))
+```
+
+```{r -geom_smooth humidity/temperature}
+ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = temp, y = humid))
+```
+
+```{r -scatterpot ind variables timestamp/humidity}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = timestamp, y = humid, color= temp))
+```
+
+```{r -geom_smooth humidity/timestamp}
+ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = timestamp, y = humid))
+```
+
+
+```{r -scatterpot ind variables waterheight1/timestamp}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = timestamp, y = water_height1))
+```
+
+```{r -geom_smooth water_height1/timestamp}
+ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = timestamp, y = water_height1))
+```
+
+
+```{r -scatterpot ind variables waterheight2/timestamp}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = timestamp, y = water_height2))
+```
+
+```{r -geom_smooth water_height2/timestamp}
+ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x =timestamp , y = water_height2))
+```
+
+```{r -scatterpot ind variables timestamp/waterheight3}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = timestamp, y = water_height3))
+```
+
+```{r -geom_smooth water_height3/timestamp}
+ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = timestamp, y = water_height3))
+```
+
+```{r -scatterpot ind variables waterheight1/waterheight2}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = water_height1, y = water_height2, color = timestamp))
+```
+
+```{r -geom_smooth water_height1/water_height2}
+ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = water_height1, y = water_height2))
+```
+
+```{r -scatterpot ind variables waterheight1/waterheight3}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = water_height1, y = water_height3, color = timestamp))
+```
+```{r -scatterpot ind variables waterheight2/waterheight3}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = water_height2, y = water_height3, color = timestamp))
+```
+
+```{r -scatterpot ind variables temperature/waterheight1}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = water_height2, y = water_height3, color = timestamp))
+```
+```{r -scatterpot ind variables temperature/waterheight2}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = temp, y = water_height2, color = timestamp))
+```
+
+```{r -scatterpot ind variables temperature/waterheight3}
+ggplot(data = data_moisture) + 
+  geom_point(mapping = aes(x = temp, y = water_height3, color = timestamp))
+```
+
+
+```{r -temperature/humidity}
+ggplot(data = data_moisture) + 
+  geom_smooth(mapping = aes(x = temp, y = humid))
 ```
 
