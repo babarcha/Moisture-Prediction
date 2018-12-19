@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+output_itir_cache/
+output_itir_files/
