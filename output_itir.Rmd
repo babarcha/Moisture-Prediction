@@ -41,6 +41,7 @@ load("../Data/data_moisture.R")
 
 #Load ground water level data from Isosuo 27.06-01.10
 ```{r, load_ground_level_data}
+knitr::opts_chunk$set(cache = TRUE)
 data_ground_level_1 <- read.csv("../Data/AA_2_1.csv", sep = ";") %>% 
   slice(12:n()) %>% 
   select("X", "X.1") %>% 
@@ -112,6 +113,7 @@ describe(Hirsikorpi)
 # Plots
 ## Histogram
 ```{r, histogram}
+knitr::opts_chunk$set(cache = TRUE)
 # Basic histogram
 ggplot(data_combined, aes(x=moisture1)) + geom_histogram(binwidth = 0.005)
 ggplot(data_combined, aes(x=moisture2)) + geom_histogram()
@@ -125,12 +127,14 @@ ggplot(data_combined, aes(x=moisture3)) + geom_histogram(binwidth = 0.00001)
 ## Scatterplots
 ```{r, scatterplots}
 # basic scatterplot
+knitr::opts_chunk$set(cache = TRUE)
 ggplot(data_combined, aes(x=timestamp, y=moisture3)) + 
 geom_point()
 ```
 
 ```{r, plotXls_iso}
 # Custom Binning. I can just give the size of the bin
+knitr::opts_chunk$set(cache = TRUE)
 ggplot(data_combined, aes(x=temp)) + geom_histogram(binwidth = 0.05)
 
 
@@ -138,6 +142,7 @@ ggplot(data_combined, aes(x=temp)) + geom_histogram(binwidth = 0.05)
 
 ```{r, plotPairs}
 # load(file = "../Data/all_moisture_data.R" )
+knitr::opts_chunk$set(cache = TRUE)
 ggpairs(data_combined, columns=c("temp", "Wind.gust..m.s.", "humid", "moisture1", "moisture2", "moisture3"))
 
 ```
@@ -145,6 +150,7 @@ ggpairs(data_combined, columns=c("temp", "Wind.gust..m.s.", "humid", "moisture1"
 ```{r combine_data}
 
 library(data.table) # v1.9.6+
+knitr::opts_chunk$set(cache = TRUE)
 
 # Add temp column from data_iso_weather with the nearest timestamp value
 setDT(data_moisture)[, temp := setDT(data_isosuo_weather)[data_moisture, temp, on = "timestamp", roll = "nearest"]]
@@ -198,7 +204,7 @@ ggplot(data = data_moisture) +
 
 ```{r -scatterpot ind variables waterheight1/timestamp}
 ggplot(data = data_moisture) + 
-  geom_point(mapping = aes(x = timestamp, y = water_height1))
+  geom_point(mapping = aes(x = timestamp, y = water_height1), position = "jitter" )
 ```
 
 ```{r -geom_smooth water_height1/timestamp}
@@ -209,7 +215,7 @@ ggplot(data = data_moisture) +
 
 ```{r -scatterpot ind variables waterheight2/timestamp}
 ggplot(data = data_moisture) + 
-  geom_point(mapping = aes(x = timestamp, y = water_height2))
+  geom_point(mapping = aes(x = timestamp, y = water_height2), position = "jitter" )
 ```
 
 ```{r -geom_smooth water_height2/timestamp}
@@ -219,7 +225,7 @@ ggplot(data = data_moisture) +
 
 ```{r -scatterpot ind variables timestamp/waterheight3}
 ggplot(data = data_moisture) + 
-  geom_point(mapping = aes(x = timestamp, y = water_height3))
+  geom_point(mapping = aes(x = timestamp, y = water_height3), position = "jitter" )
 ```
 
 ```{r -geom_smooth water_height3/timestamp}
@@ -229,35 +235,30 @@ ggplot(data = data_moisture) +
 
 ```{r -scatterpot ind variables waterheight1/waterheight2}
 ggplot(data = data_moisture) + 
-  geom_point(mapping = aes(x = water_height1, y = water_height2, color = timestamp))
-```
-
-```{r -geom_smooth water_height1/water_height2}
-ggplot(data = data_moisture) + 
-  geom_smooth(mapping = aes(x = water_height1, y = water_height2))
+  geom_point(mapping = aes(x = water_height1, y = water_height2, color = timestamp), position = "jitter" )
 ```
 
 ```{r -scatterpot ind variables waterheight1/waterheight3}
 ggplot(data = data_moisture) + 
-  geom_point(mapping = aes(x = water_height1, y = water_height3, color = timestamp))
+  geom_point(mapping = aes(x = water_height1, y = water_height3, color = timestamp), position = "jitter" )
 ```
 ```{r -scatterpot ind variables waterheight2/waterheight3}
 ggplot(data = data_moisture) + 
-  geom_point(mapping = aes(x = water_height2, y = water_height3, color = timestamp))
+  geom_point(mapping = aes(x = water_height2, y = water_height3, color = timestamp), position = "jitter" )
 ```
 
 ```{r -scatterpot ind variables temperature/waterheight1}
 ggplot(data = data_moisture) + 
-  geom_point(mapping = aes(x = water_height2, y = water_height3, color = timestamp))
+  geom_point(mapping = aes(x = water_height2, y = water_height3, color = timestamp), position = "jitter" )
 ```
 ```{r -scatterpot ind variables temperature/waterheight2}
 ggplot(data = data_moisture) + 
-  geom_point(mapping = aes(x = temp, y = water_height2, color = timestamp))
+  geom_point(mapping = aes(x = temp, y = water_height2, color = timestamp), position = "jitter" )
 ```
 
 ```{r -scatterpot ind variables temperature/waterheight3}
 ggplot(data = data_moisture) + 
-  geom_point(mapping = aes(x = temp, y = water_height3, color = timestamp))
+  geom_point(mapping = aes(x = temp, y = water_height3, color = timestamp), position = "jitter" )
 ```
 
 

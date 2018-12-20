@@ -8,7 +8,7 @@ for (i in 1:N)   {
 
 save(result, file = "../Data/merged_Isosuo.R") 
 
-# load("../Data/merged_Isosuo.R")
+#load("../Data/merged_Isosuo.R")
 
             
             
