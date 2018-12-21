@@ -78,6 +78,7 @@ data_combined <- inner_join(data_isosuo_weather, data_moisture, by="timestamp")
 ```{r -save data}
 
 save(data_moisture, data_combined, file="../Data/all_moisture_data.R")
+load("../Data/all_moisture_data.R")
 
 ```
 
