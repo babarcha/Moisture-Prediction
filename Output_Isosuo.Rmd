@@ -220,7 +220,7 @@ ggpairs(Isosuo_combined_filtered, columns=c("temperature", "wind_gust", "humidit
 
 
 ```{r}
-ggpairs(Isosuo_combined_filtered, columns=c("ground_water_1", "ground_water_2", "ground_water_3", "humidity", "moisture1", "moisture2", "moisture3"))
+ggpairs(Isosuo_combined_filtered, columns=c("AA_2_1", "AA_2_2", "AA_2_3", "humidity", "moisture1", "moisture2", "moisture3"))
 ```
 
 ```{r -scatterpot ind variables timestamp/temperature}

@@ -1,0 +1,325 @@
+---
+title: "Moisture Analysis Hirsikorpi Field"
+output:
+  html_document:
+  df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+```{r config_knitr_options, echo=FALSE}
+# Speeds up knitr by caching R output. 
+# Clear Knitr Cache in the Knit menu empties the cache 
+knitr::opts_chunk$set(cache = TRUE)
+# echo=FALSE hides the code from Kint output
+knitr::opts_chunk$set(echo = FALSE) 
+# echo=FALSE hides the messages from Kint output
+knitr::opts_chunk$set(message = FALSE)
+
+knitr::opts_chunk$set(comment=NA)
+
+```
+
+```{r load_libraries}
+library(psych)
+
+# library
+library(ggplot2)
+library(tidyverse)
+library(GGally)
+library(lubridate)
+```
+# Overview of Data
+
+## Weather Station Data
+```{r load_Hirsikorpi_weather_data}
+# The xls files are read and data is cleaned up in read_weather_station_Hirsikorpi.R file
+# This file is located in the R subdirectory of the project folder
+# If the data format of the data needs to be changed it is better to edit 
+# read_weather_station_Hirsikorpi.R file and then rerun in with the following command
+
+# source('./R/read_weather_station_Hirsikorpi.R')
+
+# Load the Hirsikorpi weather station data from the R file located in Data/R/ folder
+# loads Hirsikorpi_weather dataframe in the the global environment
+load("../Data/R/Hirsikorpi_weather.R")
+
+# Displays the first 6 rows of Hirsikorpi_weather
+head(Hirsikorpi_weather)
+
+data_Hirsikorpi_weather <- Hirsikorpi_weather
+```
+* Weather measurement on the following dates:
+```{r}
+unique(date(Hirsikorpi_weather$timestamp))
+```
+
+
+## Moisture Data
+
+```{r load_Hirsikorpi_moisture_data}
+# The cvs file is read and data is cleaned up in read_moisture_Hirsikorpi.R file
+# This file is located in the R subdirectory of the project folder
+# If the data format of the data needs to be changed it is better to edit 
+# read_moisture_Hirsikorpi.R file and then rerun in with the following command
+
+# source('./R/read_moisture_Hirsikorpi.R')
+
+
+# Load the Hirsikorpi moisture data from the R file located in Data/R/ folder
+# loads Hirsikorpi_moisture dataframe in the the global environment
+load("../Data/R/Hirsikorpi_moisture.R")
+
+# Displays the first 6 rows of Hirsikorpi_moisture
+head(Hirsikorpi_moisture)
+```
+* Moisture measurement on the following dates:
+```{r}
+unique(date(Hirsikorpi_moisture$timestamp))
+```
+
+## Ground Water Data
+```{r load_ground_water_data}
+# The cvs file is read and data is cleaned up in read_ground_water_Hirsikorpi.R file
+# This file is located in the R subdirectory of the project folder
+# If the data format of the data needs to be changed it is better to edit 
+# read_ground_water_Hirsikorpi.R file and then rerun in with the following command
+
+# source('./R/read_ground_water_Hirsikorpi.R')
+
+
+# Load the Hirsikorpi ground water data from the R file located in Data/R/ folder
+# loads Hirsikorpi_ground_water dataframe in the the global environment
+load("../Data/R/Hirsikorpi_ground_water.R")
+
+head(Hirsikorpi_ground_water)
+```
+* Ground water measurement on the following dates:
+```{r}
+unique(date(Hirsikorpi_ground_water$timestamp))
+```
+
+
+```{r load_Hirsikorpi_combined}
+
+# Hirsikorpi_moisture, Hirsikorpi_ground_water and Hirsikorpi_weather are joined in join_data_Hirsikorpi.R file
+# This file is located in the R subdirectory of the project folder
+# If the joining needs t be changed it is better to edut 
+# join_data_Hirsikorpi.R file and then rerun in with the following command
+
+# source('./R/join_data_Hirsikorpi.R')
+
+
+# Load the Hirsikorpi_r data from the R file located in Data/R/ folder
+# loads Hirsikorpi_combined dataframe in the the global environment
+load("../Data/R/Hirsikorpi_combined.R")
+
+```
+
+
+## Combined Data
+
+### Descriptive Statistics 
+
+```{r, exploreData}
+head(Hirsikorpi_combined)
+
+# Calculate the descriptive statistics for the columns of Hirsikorpi_combined
+# timestamp and time_diff columns are excluded.  
+Hirsikorpi_combined %>% 
+  select(-timestamp, -timestamp_weather, -timestamp_ground_water, -time_diff_weather, -time_diff_ground_water) %>% 
+  describe()
+
+```
+
+### Missing Data
+
+Identification of moisture measurements for which weather station and ground water data are not available
+
+#### Missing Weather Station Data
+
+```{r}
+ggplot(Hirsikorpi_combined, aes(x=timestamp, y=as.numeric(time_diff_weather))) + 
+  theme_minimal() + 
+  geom_point() +
+  ylab("Time difference in minitues")
+```
+
+
+Data points for which weather data measurements are not within a certain time frame are removed from the dataset. 
+
+* Initial number of data points: `r nrow(Hirsikorpi_combined)`
+
+```{r}
+# The cut off value is set to 5 mins.
+# This value (5) is chosen arbitrarily. It can be changed to a more meaningfull value
+time_frame_for_weather_data <- 5  
+
+number_of_rows <- nrow(Hirsikorpi_combined)
+# Get total number of rows in the Hirsikorpi_combined data
+column_names <- names(Hirsikorpi_combined) 
+Hirsikorpi_combined_filtered <- Hirsikorpi_combined %>% 
+  filter(abs(time_diff_weather) > 5)
+```
+
+* Number of data points removed when threshold for time frame is set to `r time_frame_for_weather_data`: `r number_of_rows - nrow(Hirsikorpi_combined)`
+* Remanining number of data points: `r nrow(Hirsikorpi_combined)`
+
+
+#### Missing Ground Water Data
+
+```{r}
+ggplot(Hirsikorpi_combined, aes(x=timestamp, y=as.numeric(time_diff_ground_water))) + 
+  theme_minimal() + 
+  geom_point() +
+  ylab("Time difference in minitues")
+```
+
+For all moisture measurements the time between ground water measurement is less than 2 minutes. None of the data is removed.
+
+### Descriptive Statistics for Filtered Data
+
+```{r}
+# Calculate the descriptive statistics for the columns of Hirsikorpi_combined
+# timestamp and time_diff columns are excluded.  
+Hirsikorpi_combined_filtered %>% 
+  select(-timestamp, -timestamp_weather, -timestamp_ground_water, -time_diff_weather, -time_diff_ground_water) %>% 
+  describe()
+```
+
+# Plots
+## Histogram
+```{r, histogram}
+# Basic histogram
+ggplot(Hirsikorpi_combined_filtered, aes(x=moisture1)) + geom_histogram(binwidth = 0.005) + theme_minimal()
+ggplot(Hirsikorpi_combined_filtered, aes(x=moisture2)) + geom_histogram(binwidth = 0.005) + theme_minimal()
+
+
+# Custom Binning. I can just give the size of the bin
+ggplot(Hirsikorpi_combined_filtered, aes(x=moisture3)) + geom_histogram(binwidth = 0.005)
+```
+## Scatterplots
+```{r, scatterplots}
+# basic scatterplot
+ggplot(Hirsikorpi_combined_filtered, aes(x=timestamp, y=moisture3)) + 
+  geom_point()
+```
+
+```{r, plotXls_Hirsikorpi}
+# Custom Binning. I can just give the size of the bin
+ggplot(Hirsikorpi_combined_filtered, aes(x=temperature)) + geom_histogram()
+
+
+```
+
+```{r plotPairs}
+
+ggpairs(Hirsikorpi_combined_filtered, columns=c("temperature", "wind_gust", "humidity", "moisture1", "moisture2", "moisture3"))
+
+```
+
+
+```{r}
+ggpairs(Hirsikorpi_combined_filtered, columns=c("MA_2_1", "MA_2_2", "MA_2_3", "MA_2_4", "humidity", "moisture1", "moisture2", "moisture3"))
+```
+
+```{r -scatterpot ind variables timestamp/temperature}
+ggplot(data = Hirsikorpi_weather) + 
+  geom_point(mapping = aes(x = timestamp, y = temperature, color = humidity))
+```
+
+```{r -geom_smooth temperature/timestamp}
+
+ggplot(data = Hirsikorpi_weather) + 
+  geom_smooth(mapping = aes(x = timestamp, y = temperature))
+```
+
+
+```{r -scatterpot ind variables temperature/humidity}
+ggplot(data = Hirsikorpi_weather) + 
+  geom_point(mapping = aes(x = temperature, y = humidity, color = timestamp))
+```
+
+```{r -geom_smooth humidity/temperature}
+ggplot(data = Hirsikorpi_weather) + 
+  geom_smooth(mapping = aes(x = temperature, y = humidity))
+```
+
+```{r -scatterpot ind variables timestamp/humidity}
+ggplot(data = Hirsikorpi_weather) + 
+  geom_point(mapping = aes(x = timestamp, y = humidity, color= temperature))
+```
+
+```{r -geom_smooth humidity/timestamp}
+ggplot(data = Hirsikorpi_weather) + 
+  geom_smooth(mapping = aes(x = timestamp, y = humidity))
+```
+
+
+```{r -scatterpot ind variables waterheight1/timestamp}
+ggplot(data = Hirsikorpi_ground_water) + 
+  geom_point(mapping = aes(x = timestamp, y = MA_2_1), position = "jitter" )
+```
+
+```{r -geom_smooth ground_water_1/timestamp}
+ggplot(data = Hirsikorpi_ground_water) + 
+  geom_smooth(mapping = aes(x = timestamp, y = MA_2_1))
+```
+
+
+```{r -scatterpot ind variables waterheight2/timestamp}
+ggplot(data = Hirsikorpi_ground_water) + 
+  geom_point(mapping = aes(x = timestamp, y = MA_2_2), position = "jitter" )
+```
+
+```{r -geom_smooth ground_water_2/timestamp}
+ggplot(data = Hirsikorpi_ground_water) + 
+  geom_smooth(mapping = aes(x =timestamp , y = MA_2_2))
+```
+
+```{r -scatterpot ind variables timestamp/waterheight3}
+ggplot(data = Hirsikorpi_ground_water) + 
+  geom_point(mapping = aes(x = timestamp, y = MA_2_3), position = "jitter" )
+```
+
+```{r -geom_smooth ground_water_3/timestamp}
+ggplot(data = Hirsikorpi_ground_water) + 
+  geom_smooth(mapping = aes(x = timestamp, y = MA_2_3))
+```
+
+```{r -scatterpot ind variables waterheight1/waterheight2}
+ggplot(data = Hirsikorpi_ground_water) + 
+  geom_point(mapping = aes(x = MA_2_1, y = MA_2_2, color = timestamp), position = "jitter" )
+```
+
+```{r -scatterpot ind variables waterheight1/waterheight3}
+ggplot(data = Hirsikorpi_ground_water) + 
+  geom_point(mapping = aes(x = MA_2_1, y = MA_2_3, color = timestamp), position = "jitter" )
+```
+```{r -scatterpot ind variables waterheight2/waterheight3}
+ggplot(data = Hirsikorpi_ground_water) + 
+  geom_point(mapping = aes(x = MA_2_2, y = MA_2_3, color = timestamp), position = "jitter" )
+```
+
+```{r -scatterpot ind variables temperature/waterheight1}
+ggplot(data = Hirsikorpi_ground_water) + 
+  geom_point(mapping = aes(x = MA_2_2, y = MA_2_3, color = timestamp), position = "jitter" )
+```
+```{r -scatterpot ind variables temperature/waterheight2}
+ggplot(data = Hirsikorpi_combined_filtered) + 
+  geom_point(mapping = aes(x = temperature, y = MA_2_2, color = timestamp), position = "jitter" )
+```
+
+```{r -scatterpot ind variables temperature/waterheight3}
+ggplot(data = Hirsikorpi_combined_filtered) + 
+  geom_point(mapping = aes(x = temperature, y = MA_2_3, color = timestamp), position = "jitter" )
+```
+
+
+```{r -temperature/humidity}
+ggplot(data = Hirsikorpi_weather) + 
+  geom_smooth(mapping = aes(x = temperature, y = humidity))
+```
+
+
+
