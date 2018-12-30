@@ -1,0 +1,325 @@
+---
+title: "Moisture Analysis Isosuo Field"
+output:
+  html_document:
+  df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+```{r config_knitr_options, echo=FALSE}
+# Speeds up knitr by caching R output. 
+# Clear Knitr Cache in the Knit menu empties the cache 
+knitr::opts_chunk$set(cache = TRUE)
+# echo=FALSE hides the code from Kint output
+knitr::opts_chunk$set(echo = FALSE) 
+# echo=FALSE hides the messages from Kint output
+knitr::opts_chunk$set(message = FALSE)
+
+knitr::opts_chunk$set(comment=NA)
+
+```
+
+```{r load_libraries}
+library(psych)
+
+# library
+library(ggplot2)
+library(tidyverse)
+library(GGally)
+library(lubridate)
+```
+# Overview of Data
+
+## Weather Station Data
+```{r load_Isosuo_weather_data}
+# The xls files are read and data is cleaned up in read_weather_station_Isosuo.R file
+# This file is located in the R subdirectory of the project folder
+# If the data format of the data needs to be changed it is better to edit 
+# read_weather_station_Isosuo.R file and then rerun in with the following command
+
+# source('./R/read_weather_station_Isosuo.R')
+
+# Load the Isosuo weather station data from the R file located in Data/R/ folder
+# loads Isosuo_weather dataframe in the the global environment
+load("../Data/R/Isosuo_weather.R")
+
+# Displays the first 6 rows of Isosuo_weather
+head(Isosuo_weather)
+
+data_isosuo_weather <- Isosuo_weather
+```
+* Weather measurement on the following dates:
+```{r}
+unique(date(Isosuo_weather$timestamp))
+```
+
+
+## Moisture Data
+
+```{r load_Isosuo_moisture_data}
+# The cvs file is read and data is cleaned up in read_moisture_Isosuo.R file
+# This file is located in the R subdirectory of the project folder
+# If the data format of the data needs to be changed it is better to edit 
+# read_moisture_Isosuo.R file and then rerun in with the following command
+
+# source('./R/read_moisture_Isosuo.R')
+
+
+# Load the Isosuo moisture data from the R file located in Data/R/ folder
+# loads Isosuo_moisture dataframe in the the global environment
+load("../Data/R/Isosuo_moisture.R")
+
+# Displays the first 6 rows of Isosuo_moisture
+head(Isosuo_moisture)
+```
+* Moisture measurement on the following dates:
+```{r}
+unique(date(Isosuo_moisture$timestamp))
+```
+
+## Ground Water Data
+```{r load_ground_water_data}
+# The cvs file is read and data is cleaned up in read_ground_water_Isosuo.R file
+# This file is located in the R subdirectory of the project folder
+# If the data format of the data needs to be changed it is better to edit 
+# read_ground_water_Isosuo.R file and then rerun in with the following command
+
+# source('./R/read_ground_water_Isosuo.R')
+
+
+# Load the Isosuo ground water data from the R file located in Data/R/ folder
+# loads Isosuo_ground_water dataframe in the the global environment
+load("../Data/R/Isosuo_ground_water.R")
+
+head(Isosuo_ground_water)
+```
+* Ground water measurement on the following dates:
+```{r}
+unique(date(Isosuo_ground_water$timestamp))
+```
+
+
+```{r load_Isosuo_combined}
+
+# Isosuo_moisture, Isosuo_ground_water and Isosuo_weather are joined in join_data_Isosuo.R file
+# This file is located in the R subdirectory of the project folder
+# If the joining needs t be changed it is better to edut 
+# join_data_Isosuo.R file and then rerun in with the following command
+
+# source('./R/join_data_Isosuo.R')
+
+
+# Load the Isosuo_r data from the R file located in Data/R/ folder
+# loads Isosuo_combined dataframe in the the global environment
+load("../Data/R/Isosuo_combined.R")
+
+```
+
+
+## Combined Data
+
+### Descriptive Statistics 
+
+```{r, exploreData}
+head(Isosuo_combined)
+
+# Calculate the descriptive statistics for the columns of Isosuo_combined
+# timestamp and time_diff columns are excluded.  
+Isosuo_combined %>% 
+  select(-timestamp, -timestamp_weather, -timestamp_ground_water, -time_diff_weather, -time_diff_ground_water) %>% 
+  describe()
+
+```
+
+### Missing Data
+
+Identification of moisture measurements for which weather station and ground water data are not available
+
+#### Missing Weather Station Data
+
+```{r}
+ggplot(Isosuo_combined, aes(x=timestamp, y=as.numeric(time_diff_weather))) + 
+  theme_minimal() + 
+  geom_point() +
+  ylab("Time difference in minitues")
+```
+
+
+Data points for which weather data measurements are not within a certain time frame are removed from the dataset. 
+
+* Initial number of data points: `r nrow(Isosuo_combined)`
+
+```{r}
+# The cut off value is set to 5 mins.
+# This value (5) is chosen arbitrarily. It can be changed to a more meaningfull value
+time_frame_for_weather_data <- 5  
+
+number_of_rows <- nrow(Isosuo_combined)
+# Get total number of rows in the Isosuo_combined data
+column_names <- names(Isosuo_combined) 
+Isosuo_combined_filtered <- Isosuo_combined %>% 
+  filter(abs(time_diff_weather) > 5)
+```
+
+* Number of data points removed when threshold for time frame is set to `r time_frame_for_weather_data`: `r number_of_rows - nrow(Isosuo_combined)`
+* Remanining number of data points: `r nrow(Isosuo_combined)`
+
+
+#### Missing Ground Water Data
+
+```{r}
+ggplot(Isosuo_combined, aes(x=timestamp, y=as.numeric(time_diff_ground_water))) + 
+  theme_minimal() + 
+  geom_point() +
+  ylab("Time difference in minitues")
+```
+
+For all moisture measurements the time between ground water measurement is less than 2 minutes. None of the data is removed.
+
+### Descriptive Statistics for Filtered Data
+
+```{r}
+# Calculate the descriptive statistics for the columns of Isosuo_combined
+# timestamp and time_diff columns are excluded.  
+Isosuo_combined_filtered %>% 
+  select(-timestamp, -timestamp_weather, -timestamp_ground_water, -time_diff_weather, -time_diff_ground_water) %>% 
+  describe()
+```
+
+# Plots
+## Histogram
+```{r, histogram}
+# Basic histogram
+ggplot(Isosuo_combined_filtered, aes(x=moisture1)) + geom_histogram(binwidth = 0.005) + theme_minimal()
+ggplot(Isosuo_combined_filtered, aes(x=moisture2)) + geom_histogram(binwidth = 0.005) + theme_minimal()
+
+
+# Custom Binning. I can just give the size of the bin
+ggplot(Isosuo_combined_filtered, aes(x=moisture3)) + geom_histogram(binwidth = 0.005)
+```
+## Scatterplots
+```{r, scatterplots}
+# basic scatterplot
+ggplot(Isosuo_combined_filtered, aes(x=timestamp, y=moisture3)) + 
+  geom_point()
+```
+
+```{r, plotXls_iso}
+# Custom Binning. I can just give the size of the bin
+ggplot(Isosuo_combined_filtered, aes(x=temperature)) + geom_histogram()
+
+
+```
+
+```{r plotPairs}
+
+ggpairs(Isosuo_combined_filtered, columns=c("temperature", "wind_gust", "humidity", "moisture1", "moisture2", "moisture3"))
+
+```
+
+
+```{r}
+ggpairs(Isosuo_combined_filtered, columns=c("ground_water_1", "ground_water_2", "ground_water_3", "humidity", "moisture1", "moisture2", "moisture3"))
+```
+
+```{r -scatterpot ind variables timestamp/temperature}
+ggplot(data = Isosuo_weather) + 
+  geom_point(mapping = aes(x = timestamp, y = temperature, color = humidity))
+```
+
+```{r -geom_smooth temperature/timestamp}
+
+ggplot(data = Isosuo_weather) + 
+  geom_smooth(mapping = aes(x = timestamp, y = temperature))
+```
+
+
+```{r -scatterpot ind variables temperature/humidity}
+ggplot(data = Isosuo_weather) + 
+  geom_point(mapping = aes(x = temperature, y = humidity, color = timestamp))
+```
+
+```{r -geom_smooth humidity/temperature}
+ggplot(data = Isosuo_weather) + 
+  geom_smooth(mapping = aes(x = temperature, y = humidity))
+```
+
+```{r -scatterpot ind variables timestamp/humidity}
+ggplot(data = Isosuo_weather) + 
+  geom_point(mapping = aes(x = timestamp, y = humidity, color= temperature))
+```
+
+```{r -geom_smooth humidity/timestamp}
+ggplot(data = Isosuo_weather) + 
+  geom_smooth(mapping = aes(x = timestamp, y = humidity))
+```
+
+
+```{r -scatterpot ind variables waterheight1/timestamp}
+ggplot(data = Isosuo_ground_water) + 
+  geom_point(mapping = aes(x = timestamp, y = ground_water_1), position = "jitter" )
+```
+
+```{r -geom_smooth ground_water_1/timestamp}
+ggplot(data = Isosuo_ground_water) + 
+  geom_smooth(mapping = aes(x = timestamp, y = ground_water_1))
+```
+
+
+```{r -scatterpot ind variables waterheight2/timestamp}
+ggplot(data = Isosuo_ground_water) + 
+  geom_point(mapping = aes(x = timestamp, y = ground_water_2), position = "jitter" )
+```
+
+```{r -geom_smooth ground_water_2/timestamp}
+ggplot(data = Isosuo_ground_water) + 
+  geom_smooth(mapping = aes(x =timestamp , y = ground_water_2))
+```
+
+```{r -scatterpot ind variables timestamp/waterheight3}
+ggplot(data = Isosuo_ground_water) + 
+  geom_point(mapping = aes(x = timestamp, y = ground_water_3), position = "jitter" )
+```
+
+```{r -geom_smooth ground_water_3/timestamp}
+ggplot(data = Isosuo_ground_water) + 
+  geom_smooth(mapping = aes(x = timestamp, y = ground_water_3))
+```
+
+```{r -scatterpot ind variables waterheight1/waterheight2}
+ggplot(data = Isosuo_ground_water) + 
+  geom_point(mapping = aes(x = ground_water_1, y = ground_water_2, color = timestamp), position = "jitter" )
+```
+
+```{r -scatterpot ind variables waterheight1/waterheight3}
+ggplot(data = Isosuo_ground_water) + 
+  geom_point(mapping = aes(x = ground_water_1, y = ground_water_3, color = timestamp), position = "jitter" )
+```
+```{r -scatterpot ind variables waterheight2/waterheight3}
+ggplot(data = Isosuo_ground_water) + 
+  geom_point(mapping = aes(x = ground_water_2, y = ground_water_3, color = timestamp), position = "jitter" )
+```
+
+```{r -scatterpot ind variables temperature/waterheight1}
+ggplot(data = Isosuo_ground_water) + 
+  geom_point(mapping = aes(x = ground_water_2, y = ground_water_3, color = timestamp), position = "jitter" )
+```
+```{r -scatterpot ind variables temperature/waterheight2}
+ggplot(data = Isosuo_combined_filtered) + 
+  geom_point(mapping = aes(x = temperature, y = ground_water_2, color = timestamp), position = "jitter" )
+```
+
+```{r -scatterpot ind variables temperature/waterheight3}
+ggplot(data = Isosuo_combined_filtered) + 
+  geom_point(mapping = aes(x = temperature, y = ground_water_3, color = timestamp), position = "jitter" )
+```
+
+
+```{r -temperature/humidity}
+ggplot(data = Isosuo_weather) + 
+  geom_smooth(mapping = aes(x = temperature, y = humidity))
+```
+
+
+

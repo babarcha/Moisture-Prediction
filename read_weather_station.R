@@ -1,5 +1,7 @@
 require(readxl)
 require(lubridate)
+require(magrittr)
+require(dplyr) 
 
 Isosuo_1 <- read_excel("../Data/Isosuo 11.7.-3.8_.xlsx")
 names(Isosuo_1) <- make.names(names(Isosuo_1))
